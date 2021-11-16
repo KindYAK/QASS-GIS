@@ -1,0 +1,6 @@
+.idea
+*.log
+*.pot
+*.pyc
+*.sqlite3
+git reset

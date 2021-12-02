@@ -45,6 +45,7 @@ services:
      image: nginx
      volumes:
        - ./sites-enabled:/etc/nginx/conf.d:ro
+       - ../test-front/dist/:/front:ro
      logging:
        driver: json-file
        options:
@@ -54,3 +55,15 @@ services:
        - geoserver
      ports:
        - "80:80"
+
+   front:
+     build:
+       context: ../test-front
+       dockerfile: docker/Dockerfile
+     expose:
+       - 3000
+     volumes:
+       - ../test-front/dist/:/front
+     tty: true
+     stdin_open: true
+     restart: always

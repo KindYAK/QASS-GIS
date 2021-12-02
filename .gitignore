@@ -3,4 +3,5 @@
 *.pot
 *.pyc
 *.sqlite3
-git reset
+
+.env

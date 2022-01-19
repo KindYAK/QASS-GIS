@@ -7,3 +7,9 @@
 .env
 
 data
+
+web/venv
+web/media_root
+web/static_root
+
+front/front/

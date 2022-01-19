@@ -44,8 +44,10 @@ services:
    nginx:
      image: nginx
      volumes:
-       - ./sites-enabled:/etc/nginx/conf.d:ro
+       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
        - ../test-front/dist/:/front:ro
+       - ../web/static_root:/static_root
+       - ../web/media_root:/media_root
      logging:
        driver: json-file
        options:
@@ -67,3 +69,22 @@ services:
      tty: true
      stdin_open: true
      restart: always
+
+   web:
+    env_file:
+      - ../.env
+    expose:
+      - 8000
+    depends_on:
+      - db
+    restart: always
+    build:
+      context: ../web
+      dockerfile: docker/Dockerfile
+    command: ["start-dev"]
+    volumes:
+      - ../web:/opt/app
+      - ../web/media_root:/opt/app/media_root
+      - ../web/static_root:/opt/app/static_root
+    tty: true
+    stdin_open: true

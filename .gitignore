@@ -12,4 +12,6 @@ web/venv
 web/media_root
 web/static_root
 
-front/front/
+front/front/.nuxt
+front/front/dist
+front/front/node_modules

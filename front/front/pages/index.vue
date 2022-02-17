@@ -1,16 +1,13 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card>
-        <v-card-title class="headline">
-          QASS
-        </v-card-title>
-        <v-card-text>
-          <p>Портал разработан в рамках ПЦФ №BR10965172</p>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+
+   <div id="map-wrap" style="height: 100vh">
+      <client-only>
+        <l-map :zoom=13 :center="[55.9464418,8.1277591]">
+          <l-tile-layer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
+          <l-marker :lat-lng="[55.9464418,8.1277591]"></l-marker>
+        </l-map>
+      </client-only>
+    </div>
 </template>
 
 <script>

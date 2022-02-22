@@ -3,8 +3,6 @@ version: '3.9'
 volumes:
    geoserver-data:
    geo-db-data:
-   front:
-     driver: local
 
 services:
    db:
@@ -49,7 +47,7 @@ services:
        - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
        - ../web/static_root:/static_root
        - ../web/media_root:/media_root
-       - front:/front:ro
+       - ../front/front/dist/:/front:ro
      logging:
        driver: json-file
        options:
@@ -65,7 +63,7 @@ services:
        context: ../front
        dockerfile: docker/Dockerfile
      volumes:
-       - front:/front/dist/
+       - ../front/front/dist/:/front/dist/
      tty: true
      stdin_open: true
      restart: always

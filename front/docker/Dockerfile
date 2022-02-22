@@ -8,9 +8,11 @@ RUN set -eux \
         nodejs \
         yarn
 
-COPY ../front/ /front/
-
 ENV HOST 0.0.0.0
 
+COPY ../front/package.json /front/package.json
+COPY ../front/yarn.lock /front/yarn.lock
 RUN yarn install
+COPY ../front/ /front/
+RUN yarn run build
 RUN yarn run generate

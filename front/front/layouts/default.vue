@@ -27,6 +27,7 @@
       :clipped-left="clipped"
       fixed
       app
+      style="z-index: 10000;"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title" />

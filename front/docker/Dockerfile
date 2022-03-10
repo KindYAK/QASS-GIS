@@ -1,5 +1,7 @@
 FROM alpine:3.15.0
 
+RUN mkdir "/front"
+
 WORKDIR "/front"
 
 RUN set -eux \

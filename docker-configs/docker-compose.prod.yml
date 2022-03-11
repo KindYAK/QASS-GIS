@@ -1,14 +1,11 @@
 version: '3.9'
 
-volumes:
-   geo-db-data:
-
 services:
-   geoserver:
-      volumes:
-        - /mnt/raid1/geoserver-data:/opt/geoserver/data_dir
-      environment:
-        - HTTP_PROXY_PORT=4814
+  geoserver:
+    volumes:
+      - /mnt/raid1/geoserver-data:/opt/geoserver/data_dir
+    environment:
+      - HTTP_PROXY_PORT=4814
 
   nginx:
     ports:

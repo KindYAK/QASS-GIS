@@ -1,5 +1,4 @@
 <template>
-
    <div id="map-wrap" style="height: 100vh">
       <client-only>
         <l-map :zoom=5 :center="[48.0196, 66.9237]">
@@ -20,11 +19,13 @@
 </template>
 
 <script>
+  import {GEOSERVER_WMS_URL} from '../settings/settings'
+
   export default {
     data() {
       return {
         wmsLayer: {
-          url: 'http://localhost/geoserver/qass/wms?service=WMS',
+          url: GEOSERVER_WMS_URL,
           name: 'test',
           visible: true,
           format: 'image/png',

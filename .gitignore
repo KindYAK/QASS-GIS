@@ -15,5 +15,6 @@ web/static_root
 front/front/.nuxt
 front/front/dist
 front/front/node_modules
+front/front/settings/settings.js
 
 geoserver-data

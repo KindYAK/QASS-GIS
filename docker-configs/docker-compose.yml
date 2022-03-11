@@ -53,7 +53,7 @@ services:
      depends_on:
        - geoserver
      ports:
-       - "80:80"
+       - "81:80"
 
    front:
      build:

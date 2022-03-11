@@ -7,3 +7,7 @@ services:
    geoserver:
       volumes:
         - ../geoserver-data:/opt/geoserver/data_dir
+
+  nginx:
+    ports:
+      - "80:80"

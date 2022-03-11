@@ -9,3 +9,7 @@ services:
         - /mnt/raid1/geoserver-data:/opt/geoserver/data_dir
       environment:
         - HTTP_PROXY_PORT=4814
+
+  nginx:
+    ports:
+      - "81:80"

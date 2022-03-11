@@ -52,8 +52,6 @@ services:
          max-file: '10'
      depends_on:
        - geoserver
-     ports:
-       - "81:80"
 
    front:
      build:

@@ -18,6 +18,9 @@ class Region(GeoObject):
         verbose_name = "Область"
         verbose_name_plural = "Области"
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class District(GeoObject):
     region = models.ForeignKey('Region', on_delete=models.PROTECT, verbose_name="Область")
@@ -26,6 +29,9 @@ class District(GeoObject):
     class Meta:
         verbose_name = "Район"
         verbose_name_plural = "Районы"
+
+    def __str__(self):
+        return f"Район {self.name} в {self.region}"
 
 
 class FarmLand(GeoObject):
@@ -36,6 +42,9 @@ class FarmLand(GeoObject):
         verbose_name = "Сельхоз угодье"
         verbose_name_plural = "Сельхоз угодья"
 
+    def __str__(self):
+        return f"Угодье {self.name} в {self.district}"
+
 
 class Field(GeoObject):
     farm_land = models.ForeignKey('FarmLand', on_delete=models.PROTECT, verbose_name="Сельхоз угодье")
@@ -44,6 +53,9 @@ class Field(GeoObject):
     class Meta:
         verbose_name = "Поле"
         verbose_name_plural = "Поля"
+
+    def __str__(self):
+        return f"Поле {self.name} в {self.farm_land}"
 
 
 class RawLayer(GeoObject):
@@ -61,6 +73,10 @@ class RawLayer(GeoObject):
     class Meta:
         verbose_name = "Исходный слой"
         verbose_name_plural = "Исходные слои"
+
+    def __str__(self):
+        location_name = str(self.field or self.farm_land or self.district or self.region)
+        return f"Слой {self.index_channel} с {self.satellite} в {location_name}"
 
 
 class ProcessedLayer(GeoObject):
@@ -82,6 +98,10 @@ class ProcessedLayer(GeoObject):
         verbose_name = "Обработанный слой"
         verbose_name_plural = "Обработанные слои"
 
+    def __str__(self):
+        location_name = str(self.field or self.farm_land or self.district or self.region)
+        return f"Слой {self.index_channel} в {location_name} ({self.algorithm}, {self.author})"
+
 
 class Satellite(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Название")
@@ -90,6 +110,9 @@ class Satellite(models.Model):
     class Meta:
         verbose_name = "Спутник"
         verbose_name_plural = "Спутники"
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class IndexChannel(models.Model):
@@ -102,6 +125,9 @@ class IndexChannel(models.Model):
         verbose_name = "Индекс/Канал"
         verbose_name_plural = "Индексы/Каналы"
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Author(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Название")
@@ -110,6 +136,9 @@ class Author(models.Model):
         verbose_name = "Автор"
         verbose_name_plural = "Авторы"
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Algorithm(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Название")
@@ -117,3 +146,6 @@ class Algorithm(models.Model):
     class Meta:
         verbose_name = "Алгоритм/подход"
         verbose_name_plural = "Алгоритм/подход"
+
+    def __str__(self):
+        return f"{self.name}"

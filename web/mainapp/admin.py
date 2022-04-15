@@ -36,9 +36,16 @@ class RawLayerAdmin(admin.ModelAdmin):
 
 class ProcessedLayerAdmin(admin.ModelAdmin):
     list_filter = ('region', 'district', 'farm_land', 'field', 'index_channel', 'author', 'algorithm', )
-    list_display = ('name', 'region', 'district', 'farm_land', 'field', 'index_channel', 'author', 'algorithm',
+    list_display = ('region', 'district', 'farm_land', 'field', 'index_channel', 'author', 'algorithm',
                     'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', )
-    search_fields = ('name', 'layer_name', )
+    search_fields = ('layer_name', )
+
+
+class RawLayerAdmin(admin.ModelAdmin):
+    list_filter = ('region', 'district', 'farm_land', 'field', 'index_channel', )
+    list_display = ('region', 'district', 'farm_land', 'field', 'index_channel',
+                    'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', )
+    search_fields = ('layer_name', )
 
 
 class SatelliteAdmin(admin.ModelAdmin):
@@ -69,6 +76,7 @@ admin.site.register(Region, RegionAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(FarmLand, FarmLandAdmin)
 admin.site.register(Field, FieldAdmin)
+admin.site.register(RawLayer, RawLayerAdmin)
 admin.site.register(ProcessedLayer, ProcessedLayerAdmin)
 
 admin.site.register(Satellite, SatelliteAdmin)

@@ -4,6 +4,11 @@ services:
   geoserver:
     volumes:
       - ../geoserver-data:/opt/geoserver/data_dir
+
   nginx:
     ports:
       - "80:80"
+
+  front:
+    environment:
+      - ROOT_API="http://localhost/api/"

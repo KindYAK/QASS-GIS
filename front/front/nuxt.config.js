@@ -31,6 +31,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    "~/plugins/api.js",
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -48,6 +49,10 @@ export default {
     '@nuxtjs/axios',
     'nuxt-leaflet',
   ],
+
+  publicRuntimeConfig: {
+    apiURL: process.env.ROOT_API,
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

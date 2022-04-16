@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  import {GEOSERVER_WMS_URL} from '../settings/settings'
+  import {GEOSERVER_WMS_URL} from '~/settings/dev'
 
   export default {
     data() {
@@ -33,6 +33,12 @@
           transparent: false,
           attribution: 'test',
         }
+      }
+    },
+    async asyncData({ app }) {
+      let regions = await app.$api.getRegions();
+      console.log(regions);
+      return {
       }
     }
   }

@@ -31,7 +31,7 @@
           format: 'image/png',
           layers: ['qass:2016_prom1_0101_0301', 'qass:MCD_SI1_0121y_0401_0415_byte_0.041_0.322'],
           transparent: false,
-          attribution: 'test',
+          attribution: 'РГП на ПХВ "ИИВТ" КН МОН РК',
         }
       }
     },

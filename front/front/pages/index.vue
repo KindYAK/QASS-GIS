@@ -3,12 +3,59 @@
     <v-card class="mb-5">
       <v-container fluid>
         <v-row align="left">
-          <v-col cols="4">
+          <v-col cols="3">
             <v-autocomplete
               v-model="region"
               :items="regions"
               item-text="name"
               label="Область"
+              @change="changeRegion"
+              return-object
+              auto-select-first
+              dense
+              solo
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+
+          <v-col cols="3">
+            <v-autocomplete
+              v-model="district"
+              :items="districts"
+              item-text="name"
+              label="Район"
+              @change="changeDistrict"
+              return-object
+              auto-select-first
+              dense
+              solo
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+
+          <v-col cols="3">
+            <v-autocomplete
+              v-model="farmland"
+              :items="farmlands"
+              item-text="name"
+              label="Угодье"
+              @change="changeFarmland"
+              return-object
+              auto-select-first
+              dense
+              solo
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+
+          <v-col cols="3">
+            <v-autocomplete
+              v-model="field"
+              :items="fields"
+              item-text="name"
+              label="Поле"
+              @change="changeField"
+              return-object
               auto-select-first
               dense
               solo
@@ -54,13 +101,33 @@ export default {
         transparent: false,
         attribution: 'РГП на ПХВ "ИИВТ" КН МОН РК',
       },
+      districts: [],
+      farmlands: [],
+      fields: [],
       region: null,
+      district: null,
+      farmland: null,
+      field: null,
     }
   },
   async asyncData({app}) {
     let regions = await app.$api.getRegions();
     return {
       regions: regions.data
+    }
+  },
+  methods: {
+    changeRegion() {
+      this.districts = this.region.districts;
+    },
+    changeDistrict() {
+      this.farmlands = this.district.farmlands;
+    },
+    changeFarmland() {
+      this.fields = this.farmland.fields;
+    },
+    changeField() {
+
     }
   }
 }

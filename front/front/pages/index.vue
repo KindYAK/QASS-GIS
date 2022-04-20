@@ -2,7 +2,7 @@
   <div>
     <v-card class="mb-5">
       <v-container fluid>
-        <v-row align="left">
+        <v-row>
           <v-col cols="3">
             <v-autocomplete
               v-model="region"
@@ -68,7 +68,7 @@
 
     <div id="map-wrap" class="relative z-0" style="height: 74vh">
       <client-only>
-        <l-map :zoom=5 :center="[48.0196, 66.9237]">
+        <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]">
           <l-tile-layer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
           <l-lwms-tile-layer
             :key="wmsLayer.name"
@@ -97,7 +97,7 @@ export default {
         name: 'test',
         visible: true,
         format: 'image/png',
-        layers: ['qass:2016_prom1_0101_0301', 'qass:MCD_SI1_0121y_0401_0415_byte_0.041_0.322'],
+        layers: [],
         transparent: false,
         attribution: 'РГП на ПХВ "ИИВТ" КН МОН РК',
       },
@@ -119,15 +119,76 @@ export default {
   methods: {
     changeRegion() {
       this.districts = this.region.districts;
+      console.log(this.$refs.myMap)
+      this.district = null;
+      this.farmland = null;
+      this.field = null;
+
+      this.wmsLayer.layers.length = 0;
+      if(this.region.layer_name) {
+        this.wmsLayer.layers.push(this.region.layer_name);
+      }
+
+      if(this.region.lat && this.region.lon && this.region.zoom_level) {
+        this.$refs.myMap.mapObject.setView([this.region.lat, this.region.lon], this.region.zoom_level)
+      }
     },
     changeDistrict() {
       this.farmlands = this.district.farmlands;
+
+      this.farmland = null;
+      this.field = null;
+
+      this.wmsLayer.layers.length = 0;
+      if(this.region.layer_name) {
+        this.wmsLayer.layers.push(this.region.layer_name);
+      }
+      if(this.district.layer_name) {
+        this.wmsLayer.layers.push(this.district.layer_name);
+      }
+
+      if(this.district.lat && this.district.lon && this.district.zoom_level) {
+        this.$refs.myMap.mapObject.setView([this.district.lat, this.district.lon], this.district.zoom_level)
+      }
     },
     changeFarmland() {
       this.fields = this.farmland.fields;
+
+      this.field = null;
+
+      this.wmsLayer.layers.length = 0;
+      if(this.region.layer_name) {
+        this.wmsLayer.layers.push(this.region.layer_name);
+      }
+      if(this.district.layer_name) {
+        this.wmsLayer.layers.push(this.district.layer_name);
+      }
+      if(this.farmland.layer_name) {
+        this.wmsLayer.layers.push(this.farmland.layer_name);
+      }
+
+      if(this.farmland.lat && this.farmland.lon && this.farmland.zoom_level) {
+        this.$refs.myMap.mapObject.setView([this.farmland.lat, this.farmland.lon], this.farmland.zoom_level)
+      }
     },
     changeField() {
+      this.wmsLayer.layers.length = 0;
+      if(this.region.layer_name) {
+        this.wmsLayer.layers.push(this.region.layer_name);
+      }
+      if(this.district.layer_name) {
+        this.wmsLayer.layers.push(this.district.layer_name);
+      }
+      if(this.farmland.layer_name) {
+        this.wmsLayer.layers.push(this.farmland.layer_name);
+      }
+      if(this.field.layer_name) {
+        this.wmsLayer.layers.push(this.field.layer_name);
+      }
 
+      if(this.field.lat && this.field.lon && this.field.zoom_level) {
+        this.$refs.myMap.mapObject.setView([this.field.lat, this.field.lon], this.field.zoom_level)
+      }
     }
   }
 }

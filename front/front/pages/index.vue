@@ -3,7 +3,7 @@
     <v-card class="mb-5">
       <v-container fluid>
         <v-row>
-          <v-col cols="3">
+          <v-col cols="4">
             <v-autocomplete
               v-model="region"
               :items="regions"
@@ -18,7 +18,7 @@
             ></v-autocomplete>
           </v-col>
 
-          <v-col cols="3">
+          <v-col cols="4">
             <v-autocomplete
               v-model="district"
               :items="districts"
@@ -33,7 +33,7 @@
             ></v-autocomplete>
           </v-col>
 
-          <v-col cols="3">
+          <v-col cols="4">
             <v-autocomplete
               v-model="farmland"
               :items="farmlands"
@@ -48,20 +48,20 @@
             ></v-autocomplete>
           </v-col>
 
-          <v-col cols="3">
-            <v-autocomplete
-              v-model="field"
-              :items="fields"
-              item-text="name"
-              label="Поле"
-              @change="changeField"
-              return-object
-              auto-select-first
-              dense
-              solo
-              hide-details
-            ></v-autocomplete>
-          </v-col>
+<!--          <v-col cols="3">-->
+<!--            <v-autocomplete-->
+<!--              v-model="field"-->
+<!--              :items="fields"-->
+<!--              item-text="name"-->
+<!--              label="Поле"-->
+<!--              @change="changeField"-->
+<!--              return-object-->
+<!--              auto-select-first-->
+<!--              dense-->
+<!--              solo-->
+<!--              hide-details-->
+<!--            ></v-autocomplete>-->
+<!--          </v-col>-->
         </v-row>
       </v-container>
     </v-card>
@@ -119,7 +119,6 @@ export default {
   methods: {
     changeRegion() {
       this.districts = this.region.districts;
-      console.log(this.$refs.myMap)
       this.district = null;
       this.farmland = null;
       this.field = null;

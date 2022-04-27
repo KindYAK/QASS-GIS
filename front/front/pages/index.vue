@@ -47,21 +47,39 @@
               hide-details
             ></v-autocomplete>
           </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="6">
+            <v-autocomplete
+              v-model="raw_layers_chosen"
+              :items="raw_layers"
+              item-text="layer_name"
+              label="Исходные слои"
+              @change="changeRawLayers"
+              return-object
+              auto-select-first
+              dense
+              solo
+              multiple
+              hide-details
+            ></v-autocomplete>
+          </v-col>
 
-<!--          <v-col cols="3">-->
-<!--            <v-autocomplete-->
-<!--              v-model="field"-->
-<!--              :items="fields"-->
-<!--              item-text="name"-->
-<!--              label="Поле"-->
-<!--              @change="changeField"-->
-<!--              return-object-->
-<!--              auto-select-first-->
-<!--              dense-->
-<!--              solo-->
-<!--              hide-details-->
-<!--            ></v-autocomplete>-->
-<!--          </v-col>-->
+          <v-col cols="6">
+            <v-autocomplete
+              v-model="processed_layers_chosen"
+              :items="processed_layers"
+              item-text="layer_name"
+              label="Обработанные слои"
+              @change="changeProcessedLayers"
+              return-object
+              auto-select-first
+              dense
+              solo
+              multiple
+              hide-details
+            ></v-autocomplete>
+          </v-col>
         </v-row>
       </v-container>
     </v-card>
@@ -108,6 +126,10 @@ export default {
       district: null,
       farmland: null,
       field: null,
+      processed_layers: [],
+      raw_layers: [],
+      processed_layers_chosen: [],
+      raw_layers_chosen: [],
     }
   },
   async asyncData({app}) {
@@ -131,6 +153,24 @@ export default {
       if(this.region.lat && this.region.lon && this.region.zoom_level) {
         this.$refs.myMap.mapObject.setView([this.region.lat, this.region.lon], this.region.zoom_level)
       }
+
+      this.raw_layers = [];
+      this.raw_layers_chosen = [];
+      for(let layer of this.region.region_raws){
+        if(this.raw_layers.includes(layer)){
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+
+      this.processed_layers = [];
+      this.processed_layers_chosen = [];
+      for(let layer of this.region.region_processed){
+        if(this.processed_layers.includes(layer)){
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
     },
     changeDistrict() {
       this.farmlands = this.district.farmlands;
@@ -149,6 +189,36 @@ export default {
       if(this.district.lat && this.district.lon && this.district.zoom_level) {
         this.$refs.myMap.mapObject.setView([this.district.lat, this.district.lon], this.district.zoom_level)
       }
+
+      this.raw_layers = [];
+      this.raw_layers_chosen = [];
+      for(let layer of this.region.region_raws){
+        if(this.raw_layers.includes(layer)){
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+      for(let layer of this.district.district_raws){
+        if(this.raw_layers.includes(layer)){
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+
+      this.processed_layers = [];
+      this.processed_layers_chosen = [];
+      for(let layer of this.region.region_processed){
+        if(this.processed_layers.includes(layer)){
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      for(let layer of this.district.district_processed){
+        if(this.processed_layers.includes(layer)){
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
     },
     changeFarmland() {
       this.fields = this.farmland.fields;
@@ -156,37 +226,94 @@ export default {
       this.field = null;
 
       this.wmsLayer.layers.length = 0;
-      if(this.region.layer_name) {
+      if (this.region.layer_name) {
         this.wmsLayer.layers.push(this.region.layer_name);
       }
-      if(this.district.layer_name) {
+      if (this.district.layer_name) {
         this.wmsLayer.layers.push(this.district.layer_name);
       }
-      if(this.farmland.layer_name) {
+      if (this.farmland.layer_name) {
         this.wmsLayer.layers.push(this.farmland.layer_name);
       }
 
-      if(this.farmland.lat && this.farmland.lon && this.farmland.zoom_level) {
+      if (this.farmland.lat && this.farmland.lon && this.farmland.zoom_level) {
         this.$refs.myMap.mapObject.setView([this.farmland.lat, this.farmland.lon], this.farmland.zoom_level)
       }
-    },
-    changeField() {
-      this.wmsLayer.layers.length = 0;
-      if(this.region.layer_name) {
-        this.wmsLayer.layers.push(this.region.layer_name);
+
+      this.raw_layers = [];
+      this.raw_layers_chosen = [];
+      for (let layer of this.region.region_raws) {
+        if (this.raw_layers.includes(layer)) {
+          continue
+        }
+        this.raw_layers.push(layer);
       }
-      if(this.district.layer_name) {
-        this.wmsLayer.layers.push(this.district.layer_name);
+      for (let layer of this.district.district_raws) {
+        if (this.raw_layers.includes(layer)) {
+          continue
+        }
+        this.raw_layers.push(layer);
       }
-      if(this.farmland.layer_name) {
-        this.wmsLayer.layers.push(this.farmland.layer_name);
-      }
-      if(this.field.layer_name) {
-        this.wmsLayer.layers.push(this.field.layer_name);
+      for (let layer of this.farmland.farm_land_raws) {
+        if (this.raw_layers.includes(layer)) {
+          continue
+        }
+        this.raw_layers.push(layer);
       }
 
-      if(this.field.lat && this.field.lon && this.field.zoom_level) {
-        this.$refs.myMap.mapObject.setView([this.field.lat, this.field.lon], this.field.zoom_level)
+      this.processed_layers = [];
+      this.processed_layers_chosen = [];
+      for (let layer of this.region.region_processed) {
+        if (this.processed_layers.includes(layer)) {
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      for (let layer of this.district.district_processed) {
+        if (this.processed_layers.includes(layer)) {
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      for (let layer of this.farmland.farm_land_processed) {
+        if (this.processed_layers.includes(layer)) {
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+    },
+    changeProcessedLayers(){
+      for(let layer of this.processed_layers_chosen){
+        if(this.wmsLayer.layers.includes(layer.layer_name)){
+          continue
+        }
+        this.wmsLayer.layers.push(layer.layer_name);
+      }
+
+      for(let layer of this.processed_layers) {
+        if(this.wmsLayer.layers.includes(layer.layer_name) && !this.processed_layers_chosen.includes(layer)){
+          const index = this.wmsLayer.layers.indexOf(layer.layer_name);
+          if (index > -1) {
+            this.wmsLayer.layers.splice(index, 1);
+          }
+        }
+      }
+    },
+    changeRawLayers(){
+      for(let layer of this.raw_layers_chosen){
+        if(this.wmsLayer.layers.includes(layer.layer_name)){
+          continue
+        }
+        this.wmsLayer.layers.push(layer.layer_name);
+      }
+
+      for(let layer of this.raw_layers) {
+        if(this.wmsLayer.layers.includes(layer.layer_name) && !this.raw_layers_chosen.includes(layer)){
+          const index = this.wmsLayer.layers.indexOf(layer.layer_name);
+          if (index > -1) {
+            this.wmsLayer.layers.splice(index, 1);
+          }
+        }
       }
     }
   }

@@ -56,8 +56,8 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
+          icon: 'mdi-map-legend',
+          title: 'ГИС',
           to: '/'
         },
       ],

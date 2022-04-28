@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import {GEOSERVER_WMS_URL} from '~/settings/dev'
+import {GEOSERVER_WMS_URL} from '~/settings/settings'
 
 export default {
   data() {

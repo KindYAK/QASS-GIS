@@ -106,6 +106,7 @@
 
 <script>
 import {GEOSERVER_WMS_URL} from '~/settings/settings'
+import {redrawLastLayer} from "~/utils/utils";
 
 export default {
   data() {
@@ -171,6 +172,7 @@ export default {
         }
         this.processed_layers.push(layer);
       }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
     },
     changeDistrict() {
       this.farmlands = this.district.farmlands;
@@ -219,6 +221,7 @@ export default {
         }
         this.processed_layers.push(layer);
       }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
     },
     changeFarmland() {
       this.fields = this.farmland.fields;
@@ -281,6 +284,7 @@ export default {
         }
         this.processed_layers.push(layer);
       }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
     },
     changeProcessedLayers(){
       for(let layer of this.processed_layers_chosen){
@@ -298,6 +302,7 @@ export default {
           }
         }
       }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
     },
     changeRawLayers(){
       for(let layer of this.raw_layers_chosen){
@@ -315,6 +320,7 @@ export default {
           }
         }
       }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
     }
   }
 }

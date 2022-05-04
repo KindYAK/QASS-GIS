@@ -56,9 +56,14 @@ export default {
       fixed: false,
       items: [
         {
+          icon: 'mdi-information-outline',
+          title: 'О проекте',
+          to: '/'
+        },
+        {
           icon: 'mdi-map-legend',
           title: 'ГИС',
-          to: '/'
+          to: '/gis/'
         },
       ],
       title: 'QASS'

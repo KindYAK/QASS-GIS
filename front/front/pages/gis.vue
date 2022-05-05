@@ -106,7 +106,7 @@
 
 <script>
 import {GEOSERVER_WMS_URL} from '~/settings/settings'
-import {redrawLastLayer} from "~/utils/utils";
+import {includesLayer, redrawLastLayer} from "~/utils/utils";
 
 export default {
   data() {
@@ -158,7 +158,7 @@ export default {
       this.raw_layers = [];
       this.raw_layers_chosen = [];
       for(let layer of this.region.region_raws){
-        if(this.raw_layers.includes(layer)){
+        if(includesLayer(this.raw_layers, layer)){
           continue
         }
         this.raw_layers.push(layer);
@@ -167,7 +167,7 @@ export default {
       this.processed_layers = [];
       this.processed_layers_chosen = [];
       for(let layer of this.region.region_processed){
-        if(this.processed_layers.includes(layer)){
+        if(includesLayer(this.processed_layers, layer)){
           continue
         }
         this.processed_layers.push(layer);
@@ -195,13 +195,13 @@ export default {
       this.raw_layers = [];
       this.raw_layers_chosen = [];
       for(let layer of this.region.region_raws){
-        if(this.raw_layers.includes(layer)){
+        if(includesLayer(this.raw_layers, layer)){
           continue
         }
         this.raw_layers.push(layer);
       }
       for(let layer of this.district.district_raws){
-        if(this.raw_layers.includes(layer)){
+        if(includesLayer(this.raw_layers, layer)){
           continue
         }
         this.raw_layers.push(layer);
@@ -210,13 +210,13 @@ export default {
       this.processed_layers = [];
       this.processed_layers_chosen = [];
       for(let layer of this.region.region_processed){
-        if(this.processed_layers.includes(layer)){
+        if(includesLayer(this.processed_layers, layer)){
           continue
         }
         this.processed_layers.push(layer);
       }
       for(let layer of this.district.district_processed){
-        if(this.processed_layers.includes(layer)){
+        if(includesLayer(this.processed_layers, layer)){
           continue
         }
         this.processed_layers.push(layer);
@@ -246,19 +246,19 @@ export default {
       this.raw_layers = [];
       this.raw_layers_chosen = [];
       for (let layer of this.region.region_raws) {
-        if (this.raw_layers.includes(layer)) {
+        if (includesLayer(this.raw_layers, layer)) {
           continue
         }
         this.raw_layers.push(layer);
       }
       for (let layer of this.district.district_raws) {
-        if (this.raw_layers.includes(layer)) {
+        if (includesLayer(this.raw_layers, layer)) {
           continue
         }
         this.raw_layers.push(layer);
       }
       for (let layer of this.farmland.farm_land_raws) {
-        if (this.raw_layers.includes(layer)) {
+        if (includesLayer(this.raw_layers, layer)) {
           continue
         }
         this.raw_layers.push(layer);
@@ -267,19 +267,19 @@ export default {
       this.processed_layers = [];
       this.processed_layers_chosen = [];
       for (let layer of this.region.region_processed) {
-        if (this.processed_layers.includes(layer)) {
+        if (includesLayer(this.processed_layers, layer)) {
           continue
         }
         this.processed_layers.push(layer);
       }
       for (let layer of this.district.district_processed) {
-        if (this.processed_layers.includes(layer)) {
+        if (includesLayer(this.processed_layers, layer)) {
           continue
         }
         this.processed_layers.push(layer);
       }
       for (let layer of this.farmland.farm_land_processed) {
-        if (this.processed_layers.includes(layer)) {
+        if (includesLayer(this.processed_layers, layer)) {
           continue
         }
         this.processed_layers.push(layer);

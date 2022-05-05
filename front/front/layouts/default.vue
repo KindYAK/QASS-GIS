@@ -61,6 +61,11 @@ export default {
           to: '/'
         },
         {
+          icon: 'mdi-book-alphabet',
+          title: 'Публикации',
+          to: '/publications/'
+        },
+        {
           icon: 'mdi-map-legend',
           title: 'ГИС',
           to: '/gis/'

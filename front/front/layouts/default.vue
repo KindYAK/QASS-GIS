@@ -71,7 +71,7 @@ export default {
           to: '/gis/'
         },
       ],
-      title: 'QASS'
+      title: 'QASS - ГИС для оценки деградации почв и засоленности'
     }
   }
 }

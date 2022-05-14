@@ -7,6 +7,10 @@ services:
     environment:
       - HTTP_PROXY_PORT=4814
 
+  web:
+    volumes:
+      - /mnt/raid1/geoserver-data:/geoserver_data
+
   nginx:
     ports:
       - "81:80"

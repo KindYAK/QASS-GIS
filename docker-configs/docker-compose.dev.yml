@@ -9,6 +9,10 @@ services:
     ports:
       - "80:80"
 
+  web:
+    volumes:
+      - ../geoserver-data:/geoserver_data
+
   front:
     environment:
       - ROOT_API="http://localhost/api/"

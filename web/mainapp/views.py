@@ -6,12 +6,39 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from geo.Geoserver import Geoserver
 
+from .models import *
+from .service import transliterate
+
 
 class HandleGeoDataView(TemplateView):
     template_name = "upload_geo_folder.html"
 
     def handle_folder(self, name):
-        print("HANDLE FOLDER")
+        fs = name.split("/")
+        if len(fs) > 1:
+            name = fs[-2]
+        else:
+            return
+        if name in ['shp', 'raw_layers', 'processed_layers']:
+            return # TODO
+        if len(fs) == 2:
+            print(self.geo.create_workspace(workspace=transliterate(name)))
+            if not Region.objects.filter(name=name).exists():
+                Region.objects.create(
+                    name=name,
+                )
+        if len(fs) == 3:
+            if not District.objects.filter(name=name).exists():
+                District.objects.create(
+                    name=name,
+                    region=Region.objects.get(name=fs[0])
+                )
+        if len(fs) == 4:
+            if not FarmLand.objects.filter(name=name).exists():
+                FarmLand.objects.create(
+                    name=name,
+                    district=District.objects.get(name=fs[1])
+                )
 
     def handle_tiff(self, name, ff):
         print("HANDLE TIFF")

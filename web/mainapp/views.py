@@ -15,8 +15,12 @@ class HandleGeoDataView(TemplateView):
     template_name = "upload_geo_folder.html"
 
     @staticmethod
+    def get_path(fs):
+        return os.path.join(*([GEOSERVER_ROOT] + [transliterate(f) for f in fs]))
+
+    @staticmethod
     def create_folder(fs):
-        path = os.path.join(*([GEOSERVER_ROOT] + [transliterate(f) for f in fs]))
+        path = HandleGeoDataView.get_path(fs)
         if not os.path.exists(path):
             os.mkdir(path)
 
@@ -26,7 +30,7 @@ class HandleGeoDataView(TemplateView):
             name = fs[-2]
         else:
             return
-        self.create_folder(fs)
+        HandleGeoDataView.create_folder(fs)
         if len(fs) == 2:
             print(self.geo.create_workspace(workspace=transliterate(name)))
             if not Region.objects.filter(name=name).exists():
@@ -47,19 +51,31 @@ class HandleGeoDataView(TemplateView):
                 )
 
     def handle_tiff(self, name, ff):
-        print("HANDLE TIFF")
+        fs = name.split("/")
+        path = HandleGeoDataView.get_path(fs)
+        with open(path, "wb") as f:
+            f.write(ff.read())
+        # TODO - create geoserver layer, model
 
     def handle_shp(self, name, ff):
-        print("HANDLE SHP")
+        fs = name.split("/")
+        path = HandleGeoDataView.get_path(fs)
+        with open(path, "wb") as f:
+            f.write(ff.read())
+        # TODO - create geoserver layer, model
 
     def handle_shp_dep(self, name, ff):
-        print("HANDLE SHP DEP")
+        fs = name.split("/")
+        path = HandleGeoDataView.get_path(fs)
+        with open(path, "wb") as f:
+            f.write(ff.read())
+        # TODO - create geoserver layer, model
 
     def post(self, request):
         if not request.user.is_staff:
             return HttpResponse("403 FORBIDDEN. Go to /admin/ and log in")
-        self.geo = Geoserver('http://geoserver:8080/geoserver/', username=os.environ['GEOSERVER_ADMIN_USER'], password=os.environ['GEOSERVER_ADMIN_PASSWORD'])
         if request.method == "POST":
+            self.geo = Geoserver('http://geoserver:8080/geoserver/', username=os.environ['GEOSERVER_ADMIN_USER'], password=os.environ['GEOSERVER_ADMIN_PASSWORD'])
             with zipfile.ZipFile(request.FILES['file']) as f:
                 names = f.namelist()
                 files = f.filelist
@@ -70,7 +86,7 @@ class HandleGeoDataView(TemplateView):
                             name = name.encode('cp437').decode('utf-8')
                         else:
                             name = name.encode('cp437').decode('cp866')
-                        print(name)
+                        print(name) # TODO REMOVE
                         if name.endswith("/"):
                             self.handle_folder(name)
                         elif name.endswith(".tif") or name.endswith(".tiff"):
@@ -81,5 +97,4 @@ class HandleGeoDataView(TemplateView):
                             self.handle_shp_dep(name, ff)
                         else:
                             raise Exception("NOT IMPLEMENTED STUFF!")
-                        # data = ff.read(name)
         return render(request, "upload_geo_folder.html")

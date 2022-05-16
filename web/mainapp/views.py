@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from geo.Geoserver import Geoserver
 
+from qassback.settings import GEOSERVER_ROOT
 from .models import *
 from .service import transliterate
 
@@ -13,27 +14,32 @@ from .service import transliterate
 class HandleGeoDataView(TemplateView):
     template_name = "upload_geo_folder.html"
 
+    @staticmethod
+    def create_folder(fs):
+        path = os.path.join(*([GEOSERVER_ROOT] + [transliterate(f) for f in fs]))
+        if not os.path.exists(path):
+            os.mkdir(path)
+
     def handle_folder(self, name):
         fs = name.split("/")
         if len(fs) > 1:
             name = fs[-2]
         else:
             return
-        if name in ['shp', 'raw_layers', 'processed_layers']:
-            return # TODO
+        self.create_folder(fs)
         if len(fs) == 2:
             print(self.geo.create_workspace(workspace=transliterate(name)))
             if not Region.objects.filter(name=name).exists():
                 Region.objects.create(
                     name=name,
                 )
-        if len(fs) == 3:
+        elif len(fs) == 3:
             if not District.objects.filter(name=name).exists():
                 District.objects.create(
                     name=name,
                     region=Region.objects.get(name=fs[0])
                 )
-        if len(fs) == 4:
+        elif len(fs) == 4:
             if not FarmLand.objects.filter(name=name).exists():
                 FarmLand.objects.create(
                     name=name,

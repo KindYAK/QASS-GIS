@@ -117,13 +117,8 @@ class HandleGeoDataView(TemplateView):
         path = HandleGeoDataView.get_path(fs)
         with open(path, "wb") as f:
             f.write(ff.read())
+        print("!!!!! HANDLE SHP ZIP")
         # TODO - create geoserver layer, model
-
-    def handle_shp_dep(self, name, ff):
-        fs = name.split("/")
-        path = HandleGeoDataView.get_path(fs)
-        with open(path, "wb") as f:
-            f.write(ff.read())
 
     def post(self, request):
         if not request.user.is_staff:
@@ -144,10 +139,8 @@ class HandleGeoDataView(TemplateView):
                             self.handle_folder(name)
                         elif name.endswith(".tif") or name.endswith(".tiff"):
                             self.handle_tiff(name, ff)
-                        elif name.endswith(".shp"):
+                        elif "/shp/" in name and name.endswith(".zip"):
                             self.handle_shp(name, ff)
-                        elif "/shp/" in name and not name.endswith(".shp"):
-                            self.handle_shp_dep(name, ff)
                         else:
                             raise Exception("NOT IMPLEMENTED STUFF!")
         return render(request, "upload_geo_folder.html")

@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from geo.Geoserver import Geoserver
 
-from qassback.settings import GEOSERVER_ROOT
+from qassback.settings import GEOSERVER_ROOT, GEOSERVER_REAL_ROOT
 from .models import *
 from .service import transliterate
 
@@ -53,9 +53,39 @@ class HandleGeoDataView(TemplateView):
     def handle_tiff(self, name, ff):
         fs = name.split("/")
         path = HandleGeoDataView.get_path(fs)
-        with open(path, "wb") as f:
-            f.write(ff.read())
-        # TODO - create geoserver layer, model
+        layer_name = fs[-1].replace(".tiff", "").replace(".tif", "").replace(".", "")
+        res = self.geo.create_coveragestore(
+            layer_name=layer_name,
+            path=path,
+            workspace=transliterate(fs[0])
+        )
+        if "successfully" not in res:
+            raise Exception(f"Handle {path} TIFF create_coveragestore error: {res}")
+
+        style_name = f"{layer_name}_style"
+        try:
+            print("!", self.geo.delete_style(style_name=style_name, workspace=transliterate(fs[0])))
+        except:
+            pass
+
+        res = self.geo.create_coveragestyle(
+            raster_path=path,
+            style_name=style_name,
+            workspace=transliterate(fs[0]),
+            color_ramp='RdYlGn', # Seaborn/Matplotlib scheme name
+
+        )
+        if res != 200 and "successfully" not in str(res):
+            raise Exception(f"Handle {path} TIFF create_coveragestyle error: {res}")
+
+        res = self.geo.publish_style(
+            layer_name=layer_name,
+            style_name=style_name,
+            workspace=transliterate(fs[0]),
+        )
+        if res != 200 and "successfully" not in str(res):
+            raise Exception(f"Handle {path} TIFF publish_style error: {res}")
+        # TODO - create model
 
     def handle_shp(self, name, ff):
         fs = name.split("/")
@@ -69,7 +99,6 @@ class HandleGeoDataView(TemplateView):
         path = HandleGeoDataView.get_path(fs)
         with open(path, "wb") as f:
             f.write(ff.read())
-        # TODO - create geoserver layer, model
 
     def post(self, request):
         if not request.user.is_staff:
@@ -86,7 +115,6 @@ class HandleGeoDataView(TemplateView):
                             name = name.encode('cp437').decode('utf-8')
                         else:
                             name = name.encode('cp437').decode('cp866')
-                        print(name) # TODO REMOVE
                         if name.endswith("/"):
                             self.handle_folder(name)
                         elif name.endswith(".tif") or name.endswith(".tiff"):

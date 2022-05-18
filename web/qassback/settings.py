@@ -153,6 +153,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
 
 GEOSERVER_ROOT = "/geoserver_data/"
+GEOSERVER_REAL_ROOT = "/opt/geoserver/data_dir/"
 
 SHELL_PLUS_PRE_IMPORTS = (
     'datetime',

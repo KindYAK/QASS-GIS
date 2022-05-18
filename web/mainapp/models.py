@@ -64,11 +64,11 @@ class RawLayer(GeoObject):
     farm_land = models.ForeignKey('FarmLand', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Сельхоз угодье", related_name="farm_land_raws")
     field = models.ForeignKey('Field', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Поле", related_name="field_raws")
 
-    datetime_start = models.DateTimeField(verbose_name="Дата начала съёмки")
-    datetime_end = models.DateTimeField(verbose_name="Дата конца съёмки")
+    datetime_start = models.DateTimeField(null=True, verbose_name="Дата начала съёмки")
+    datetime_end = models.DateTimeField(null=True, verbose_name="Дата конца съёмки")
 
-    satellite = models.ForeignKey('Satellite', on_delete=models.PROTECT, verbose_name="Спутник")
-    index_channel = models.ForeignKey('IndexChannel', on_delete=models.PROTECT, verbose_name="Индекс/Канал")
+    satellite = models.ForeignKey('Satellite', null=True, on_delete=models.PROTECT, verbose_name="Спутник")
+    index_channel = models.ForeignKey('IndexChannel', null=True, on_delete=models.PROTECT, verbose_name="Индекс/Канал")
 
     class Meta:
         verbose_name = "Исходный слой"
@@ -85,14 +85,14 @@ class ProcessedLayer(GeoObject):
     farm_land = models.ForeignKey('FarmLand', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Сельхоз угодье", related_name="farm_land_processed")
     field = models.ForeignKey('Field', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Поле", related_name="field_processed")
 
-    datetime_start = models.DateTimeField(verbose_name="Дата начала съёмки")
-    datetime_end = models.DateTimeField(verbose_name="Дата конца съёмки")
+    datetime_start = models.DateTimeField(null=True, verbose_name="Дата начала съёмки")
+    datetime_end = models.DateTimeField(null=True, verbose_name="Дата конца съёмки")
 
     source_layers = models.ManyToManyField('RawLayer', blank=True, verbose_name="Исходные слои")
 
-    index_channel = models.ForeignKey('IndexChannel', on_delete=models.PROTECT, verbose_name="Индекс/Канал")
-    author = models.ForeignKey('Author', on_delete=models.PROTECT, verbose_name="Автор")
-    algorithm = models.ForeignKey('Algorithm', on_delete=models.PROTECT, verbose_name="Алгоритм/подход")
+    index_channel = models.ForeignKey('IndexChannel', null=True, on_delete=models.PROTECT, verbose_name="Индекс/Канал")
+    author = models.ForeignKey('Author', null=True, on_delete=models.PROTECT, verbose_name="Автор")
+    algorithm = models.ForeignKey('Algorithm', null=True, on_delete=models.PROTECT, verbose_name="Алгоритм/подход")
 
     class Meta:
         verbose_name = "Обработанный слой"

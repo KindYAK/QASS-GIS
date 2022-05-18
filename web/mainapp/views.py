@@ -1,12 +1,13 @@
 import os
 import zipfile
 
+from annoying.functions import get_object_or_None
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from geo.Geoserver import Geoserver
 
-from qassback.settings import GEOSERVER_ROOT, GEOSERVER_REAL_ROOT
+from qassback.settings import GEOSERVER_ROOT
 from .models import *
 from .service import transliterate
 
@@ -32,7 +33,7 @@ class HandleGeoDataView(TemplateView):
             return
         HandleGeoDataView.create_folder(fs)
         if len(fs) == 2:
-            print(self.geo.create_workspace(workspace=transliterate(name)))
+            self.geo.create_workspace(workspace=transliterate(name))
             if not Region.objects.filter(name=name).exists():
                 Region.objects.create(
                     name=name,
@@ -64,7 +65,7 @@ class HandleGeoDataView(TemplateView):
 
         style_name = f"{layer_name}_style"
         try:
-            print("!", self.geo.delete_style(style_name=style_name, workspace=transliterate(fs[0])))
+            self.geo.delete_style(style_name=style_name, workspace=transliterate(fs[0]))
         except:
             pass
 
@@ -85,7 +86,31 @@ class HandleGeoDataView(TemplateView):
         )
         if res != 200 and "successfully" not in str(res):
             raise Exception(f"Handle {path} TIFF publish_style error: {res}")
-        # TODO - create model
+
+        name = fs[-3]
+        if "/processed_layers/" in path:
+            LayerModel = ProcessedLayer
+        elif "/raw_layers/" in path:
+            LayerModel = RawLayer
+        else:
+            raise Exception("Not implemented!")
+
+        if len(fs) == 3:
+            attribution_param = {"region": Region.objects.get(name=name)}
+        elif len(fs) == 4:
+            attribution_param = {"district": District.objects.get(name=name)}
+        elif len(fs) == 5:
+            attribution_param = {"farm_land": FarmLand.objects.get(name=name)}
+        else:
+            raise Exception("Not implemented!")
+
+        layer_full_name = f"{transliterate(fs[0])}:{layer_name}"
+        layer_obj = get_object_or_None(LayerModel, layer_name=layer_full_name)
+        if not layer_obj:
+            LayerModel.objects.create(
+                layer_name=layer_full_name,
+                **attribution_param
+            )
 
     def handle_shp(self, name, ff):
         fs = name.split("/")

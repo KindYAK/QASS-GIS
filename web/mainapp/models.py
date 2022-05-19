@@ -2,7 +2,7 @@ from django.db import models
 
 
 class GeoObject(models.Model):
-    layer_name = models.CharField(null=True, blank=True, max_length=150, unique=True, verbose_name="Название слоя в GeoServer")
+    layer_name = models.CharField(null=True, blank=True, max_length=15000, unique=True, verbose_name="Название слоя в GeoServer")
     lat = models.FloatField(null=True, blank=True, verbose_name="Широта")
     lon = models.FloatField(null=True, blank=True, verbose_name="Долгота")
     zoom_level = models.FloatField(null=True, blank=True, verbose_name="Уровень Zoomа")

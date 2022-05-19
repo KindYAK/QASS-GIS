@@ -25,6 +25,22 @@ class HandleGeoDataView(TemplateView):
         if not os.path.exists(path):
             os.mkdir(path)
 
+    @staticmethod
+    def get_shp_name(file):
+        with zipfile.ZipFile(file) as f:
+            names = f.namelist()
+            files = f.filelist
+            for index, name in enumerate(names):
+                ZIP_FILENAME_UTF8_FLAG = 0x800
+                with f.open(files[index]) as ff:
+                    if f.getinfo(name).flag_bits & ZIP_FILENAME_UTF8_FLAG:
+                        name = name.encode('cp437').decode('utf-8')
+                    else:
+                        name = name.encode('cp437').decode('cp866')
+                if name.endswith(".shp"):
+                    return name[:-4]
+        raise Exception("SHP file not found!")
+
     def handle_folder(self, name):
         fs = name.split("/")
         if len(fs) > 1:
@@ -115,10 +131,36 @@ class HandleGeoDataView(TemplateView):
     def handle_shp(self, name, ff):
         fs = name.split("/")
         path = HandleGeoDataView.get_path(fs)
+        store_name = fs[-1].replace(".zip", "").replace(".", "")
         with open(path, "wb") as f:
             f.write(ff.read())
-        print("!!!!! HANDLE SHP ZIP")
-        # TODO - create geoserver layer, model
+
+        res = self.geo.create_shp_datastore(
+            path=path,
+            store_name=store_name,
+            workspace=transliterate(fs[0])
+        )
+        if "successfully" not in res:
+            raise Exception(f"Handle {path} TIFF create_coveragestore error: {res}")
+
+        name = fs[-3]
+        if len(fs) == 3:
+            obj = Region.objects.get(name=name)
+        elif len(fs) == 4:
+            obj = District.objects.get(name=name)
+        elif len(fs) == 5:
+            obj = FarmLand.objects.get(name=name)
+        else:
+            raise Exception("Not implemented!")
+
+        ff.seek(0)
+        layer_name = HandleGeoDataView.get_shp_name(ff)
+        layer_full_name = f"{transliterate(fs[0])}:{layer_name}"
+        if obj.layer_name is None:
+            obj.layer_name = ""
+        layers = set(obj.layer_name.split(",") + [layer_full_name])
+        obj.layer_name = ",".join((l for l in layers if l))
+        obj.save()
 
     def post(self, request):
         if not request.user.is_staff:

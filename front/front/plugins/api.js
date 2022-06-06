@@ -1,4 +1,6 @@
-export default function ({ $axios, $config: {apiURL} }, inject) {
+import {ROOT_API} from "~/settings/settings.js";
+
+export default function ({ $axios }, inject) {
   // Create a custom axios instance
   const apiClient = $axios.create({
     withCredentials: false,
@@ -10,7 +12,7 @@ export default function ({ $axios, $config: {apiURL} }, inject) {
 
   const api = {
     getRegions: async () => {
-      return await apiClient({url: `regions/`, baseURL: apiURL, method: 'GET'});
+      return await apiClient({url: `regions/`, baseURL: ROOT_API, method: 'GET'});
     },
   };
 

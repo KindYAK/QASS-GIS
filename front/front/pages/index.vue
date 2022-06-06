@@ -70,8 +70,8 @@
       Работа выполнена при поддержке гранта МОН РК ИРН BR10965172, выполняемой в Институте информационных и вычислительных технологий КН МОН РК, по договору №362 от 07 сентября 2021 года
     </div>
 
-    <img :src='`${STATIC_URL}/img/main1.png`'>
-    <img :src='`${STATIC_URL}/img/main2.png`'>
+    <img :src='`${STATIC_URL}img/main1.png`'>
+    <img :src='`${STATIC_URL}img/main2.png`'>
   </div>
 </template>
 

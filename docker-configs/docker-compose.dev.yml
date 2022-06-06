@@ -6,6 +6,8 @@ services:
       - ../geoserver-data:/opt/geoserver/data_dir
 
   nginx:
+    volumes:
+      - ./nginx-dev.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "80:80"
 

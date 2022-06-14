@@ -87,7 +87,7 @@
     <div id="map-wrap" class="relative z-0" style="height: 74vh">
       <client-only>
         <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]">
-          <l-tile-layer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
+          <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
           <l-lwms-tile-layer
             :key="wmsLayer.name"
             :base-url="wmsLayer.url"

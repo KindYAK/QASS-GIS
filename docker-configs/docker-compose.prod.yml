@@ -5,7 +5,7 @@ services:
     volumes:
       - /mnt/raid1/geoserver-data:/opt/geoserver/data_dir
     environment:
-      - HTTP_PROXY_PORT=4814
+      - HTTP_PROXY_PORT=443
 
   web:
     volumes:
@@ -28,7 +28,3 @@ services:
       - ../certbot/conf:/etc/letsencrypt
       - ../certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
-  front:
-    environment:
-      - ROOT_API="http://89.250.84.153:4814/api/"

@@ -66,6 +66,11 @@ export default {
           to: '/publications/'
         },
         {
+          icon: 'mdi-archive-search-outline',
+          title: 'Архив ЮКО',
+          to: '/archive_uko/'
+        },
+        {
           icon: 'mdi-map-legend',
           title: 'ГИС',
           to: '/gis/'

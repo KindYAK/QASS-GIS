@@ -5,8 +5,9 @@ services:
     volumes:
       - /mnt/raid1/geoserver-data:/opt/geoserver/data_dir
     environment:
-      - HTTPS_PROXY_PORT=443
-      - HTTPS_PROXY_NAME=https://qass.iict.kz
+#      - HTTPS_PROXY_PORT=443
+#      - HTTPS_PROXY_NAME=https://qass.iict.kz
+      - SSL=true
 
   web:
     volumes:

@@ -28,10 +28,10 @@ class FieldAdmin(admin.ModelAdmin):
 
 
 class RawLayerAdmin(admin.ModelAdmin):
-    list_filter = ('region', 'district', 'farm_land', 'field', 'satellite', 'index_channel', 'enabled', )
-    list_display = ('name', 'region', 'district', 'farm_land', 'field', 'satellite', 'index_channel',
+    list_filter = ('region', 'district', 'farm_land', 'field', 'index_channel', 'enabled', )
+    list_display = ('region', 'district', 'farm_land', 'field', 'index_channel',
                     'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', 'enabled', )
-    search_fields = ('name', 'layer_name', )
+    search_fields = ('layer_name', )
 
 
 class ProcessedLayerAdmin(admin.ModelAdmin):

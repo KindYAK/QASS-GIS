@@ -5,32 +5,32 @@ from restapp.serializers import *
 
 
 class RegionViewSet(viewsets.ModelViewSet):
-    queryset = Region.objects.all()
+    queryset = Region.objects.filter(enabled=True)
     serializer_class = RegionSerializer
 
 
 class DistrictViewSet(viewsets.ModelViewSet):
-    queryset = District.objects.all()
+    queryset = District.objects.filter(enabled=True)
     serializer_class = DistrictSerializer
 
 
 class FarmLandViewSet(viewsets.ModelViewSet):
-    queryset = FarmLand.objects.all()
+    queryset = FarmLand.objects.filter(enabled=True)
     serializer_class = FarmLandSerializer
 
 
 class FieldViewSet(viewsets.ModelViewSet):
-    queryset = Field.objects.all()
+    queryset = Field.objects.filter(enabled=True)
     serializer_class = FieldSerializer
 
 
 class RawLayerViewSet(viewsets.ModelViewSet):
-    queryset = RawLayer.objects.all()
+    queryset = RawLayer.objects.filter(enabled=True)
     serializer_class = RawLayerSerializer
 
 
 class ProcessedLayerViewSet(viewsets.ModelViewSet):
-    queryset = ProcessedLayer.objects.all()
+    queryset = ProcessedLayer.objects.filter(enabled=True)
     serializer_class = ProcessedLayerSerializer
 
 

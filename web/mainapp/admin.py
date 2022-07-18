@@ -4,47 +4,40 @@ from mainapp.models import *
 
 
 class RegionAdmin(admin.ModelAdmin):
-    list_filter = ()
-    list_display = ('name', 'layer_name', 'lat', 'lon', 'zoom_level', )
+    list_filter = ('enabled', )
+    list_display = ('name', 'layer_name', 'lat', 'lon', 'zoom_level', 'enabled', )
     search_fields = ('name', 'layer_name', )
 
 
 class DistrictAdmin(admin.ModelAdmin):
-    list_filter = ('region', )
-    list_display = ('name', 'region', 'layer_name', 'lat', 'lon', 'zoom_level', )
+    list_filter = ('region', 'enabled', )
+    list_display = ('name', 'region', 'layer_name', 'lat', 'lon', 'zoom_level', 'enabled', )
     search_fields = ('name', 'layer_name', )
 
 
 class FarmLandAdmin(admin.ModelAdmin):
-    list_filter = ('district', )
-    list_display = ('name', 'district', 'layer_name', 'lat', 'lon', 'zoom_level', )
+    list_filter = ('district', 'enabled', )
+    list_display = ('name', 'district', 'layer_name', 'lat', 'lon', 'zoom_level', 'enabled', )
     search_fields = ('name', 'layer_name', )
 
 
 class FieldAdmin(admin.ModelAdmin):
-    list_filter = ('farm_land', )
-    list_display = ('name', 'farm_land', 'layer_name', 'lat', 'lon', 'zoom_level', )
+    list_filter = ('farm_land', 'enabled', )
+    list_display = ('name', 'farm_land', 'layer_name', 'lat', 'lon', 'zoom_level', 'enabled', )
     search_fields = ('name', 'layer_name', )
 
 
 class RawLayerAdmin(admin.ModelAdmin):
-    list_filter = ('region', 'district', 'farm_land', 'field', 'satellite', 'index_channel')
+    list_filter = ('region', 'district', 'farm_land', 'field', 'satellite', 'index_channel', 'enabled', )
     list_display = ('name', 'region', 'district', 'farm_land', 'field', 'satellite', 'index_channel',
-                    'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', )
+                    'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', 'enabled', )
     search_fields = ('name', 'layer_name', )
 
 
 class ProcessedLayerAdmin(admin.ModelAdmin):
-    list_filter = ('region', 'district', 'farm_land', 'field', 'index_channel', 'author', 'algorithm', )
+    list_filter = ('region', 'district', 'farm_land', 'field', 'index_channel', 'author', 'algorithm', 'enabled', )
     list_display = ('region', 'district', 'farm_land', 'field', 'index_channel', 'author', 'algorithm',
-                    'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', )
-    search_fields = ('layer_name', )
-
-
-class RawLayerAdmin(admin.ModelAdmin):
-    list_filter = ('region', 'district', 'farm_land', 'field', 'index_channel', )
-    list_display = ('region', 'district', 'farm_land', 'field', 'index_channel',
-                    'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', )
+                    'datetime_start', 'datetime_end', 'layer_name', 'lat', 'lon', 'zoom_level', 'enabled', )
     search_fields = ('layer_name', )
 
 

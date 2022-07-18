@@ -6,6 +6,7 @@ class GeoObject(models.Model):
     lat = models.FloatField(null=True, blank=True, verbose_name="Широта")
     lon = models.FloatField(null=True, blank=True, verbose_name="Долгота")
     zoom_level = models.FloatField(null=True, blank=True, verbose_name="Уровень Zoomа")
+    enabled = models.BooleanField(default=True, verbose_name="Включено?")
 
     class Meta:
         abstract = True

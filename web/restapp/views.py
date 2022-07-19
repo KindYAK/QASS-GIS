@@ -5,22 +5,22 @@ from restapp.serializers import *
 
 
 class RegionViewSet(viewsets.ModelViewSet):
-    queryset = Region.objects.filter(enabled=True)
+    queryset = Region.objects.filter(enabled=True).order_by('name')
     serializer_class = RegionSerializer
 
 
 class DistrictViewSet(viewsets.ModelViewSet):
-    queryset = District.objects.filter(enabled=True)
+    queryset = District.objects.filter(enabled=True).order_by('name')
     serializer_class = DistrictSerializer
 
 
 class FarmLandViewSet(viewsets.ModelViewSet):
-    queryset = FarmLand.objects.filter(enabled=True)
+    queryset = FarmLand.objects.filter(enabled=True).order_by('name')
     serializer_class = FarmLandSerializer
 
 
 class FieldViewSet(viewsets.ModelViewSet):
-    queryset = Field.objects.filter(enabled=True)
+    queryset = Field.objects.filter(enabled=True).order_by('name')
     serializer_class = FieldSerializer
 
 

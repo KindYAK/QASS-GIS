@@ -12,17 +12,17 @@ class RegionSerializer(serializers.ModelSerializer):
         self.fields['region_processed'] = SerializerMethodField()
 
     def get_districts(self, region):
-        qs = District.objects.filter(enabled=True, region=region)
+        qs = District.objects.filter(enabled=True, region=region).order_by('name')
         serializer = DistrictSerializer(instance=qs, many=True)
         return serializer.data
 
     def get_region_raws(self, region):
-        qs = RawLayer.objects.filter(enabled=True, region=region)
+        qs = RawLayer.objects.filter(enabled=True, region=region).order_by('layer_name')
         serializer = RawLayerSerializer(instance=qs, many=True)
         return serializer.data
 
     def get_region_processed(self, region):
-        qs = ProcessedLayer.objects.filter(enabled=True, region=region)
+        qs = ProcessedLayer.objects.filter(enabled=True, region=region).order_by('layer_name')
         serializer = ProcessedLayerSerializer(instance=qs, many=True)
         return serializer.data
 
@@ -40,17 +40,17 @@ class DistrictSerializer(serializers.ModelSerializer):
         self.fields['district_processed'] = SerializerMethodField()
 
     def get_farmlands(self, district):
-        qs = FarmLand.objects.filter(enabled=True, district=district)
+        qs = FarmLand.objects.filter(enabled=True, district=district).order_by('name')
         serializer = FarmLandSerializer(instance=qs, many=True)
         return serializer.data
 
     def get_district_raws(self, district):
-        qs = RawLayer.objects.filter(enabled=True, district=district)
+        qs = RawLayer.objects.filter(enabled=True, district=district).order_by('layer_name')
         serializer = RawLayerSerializer(instance=qs, many=True)
         return serializer.data
 
     def get_district_processed(self, district):
-        qs = ProcessedLayer.objects.filter(enabled=True, district=district)
+        qs = ProcessedLayer.objects.filter(enabled=True, district=district).order_by('layer_name')
         serializer = ProcessedLayerSerializer(instance=qs, many=True)
         return serializer.data
 
@@ -68,17 +68,17 @@ class FarmLandSerializer(serializers.ModelSerializer):
         self.fields['farm_land_processed'] = SerializerMethodField()
 
     def get_fields_(self, farm_land):
-        qs = Field.objects.filter(enabled=True, farm_land=farm_land)
+        qs = Field.objects.filter(enabled=True, farm_land=farm_land).order_by('name')
         serializer = FieldSerializer(instance=qs, many=True)
         return serializer.data
 
     def get_farm_land_raws(self, farm_land):
-        qs = RawLayer.objects.filter(enabled=True, farm_land=farm_land)
+        qs = RawLayer.objects.filter(enabled=True, farm_land=farm_land).order_by('layer_name')
         serializer = RawLayerSerializer(instance=qs, many=True)
         return serializer.data
 
     def get_farm_land_processed(self, farm_land):
-        qs = ProcessedLayer.objects.filter(enabled=True, farm_land=farm_land)
+        qs = ProcessedLayer.objects.filter(enabled=True, farm_land=farm_land).order_by('layer_name')
         serializer = ProcessedLayerSerializer(instance=qs, many=True)
         return serializer.data
 
@@ -95,12 +95,12 @@ class FieldSerializer(serializers.ModelSerializer):
         self.fields['field_processed'] = SerializerMethodField()
 
     def get_field_raws(self, field):
-        qs = RawLayer.objects.filter(enabled=True, field=field)
+        qs = RawLayer.objects.filter(enabled=True, field=field).order_by('layer_name')
         serializer = RawLayerSerializer(instance=qs, many=True)
         return serializer.data
 
     def get_field_processed(self, field):
-        qs = ProcessedLayer.objects.filter(enabled=True, field=field)
+        qs = ProcessedLayer.objects.filter(enabled=True, field=field).order_by('layer_name')
         serializer = ProcessedLayerSerializer(instance=qs, many=True)
         return serializer.data
 

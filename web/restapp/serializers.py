@@ -111,6 +111,9 @@ class FieldSerializer(serializers.ModelSerializer):
 
 
 class RawLayerSerializer(serializers.ModelSerializer):
+    def get_verbose_name(self, layer):
+        return f"{layer.layer_name} ({layer.index_channel} - {layer.satellite})"
+
     class Meta:
         model = RawLayer
         exclude = ('region', 'district', 'farm_land', 'field')
@@ -118,6 +121,11 @@ class RawLayerSerializer(serializers.ModelSerializer):
 
 
 class ProcessedLayerSerializer(serializers.ModelSerializer):
+    verbose_name = SerializerMethodField()
+
+    def get_verbose_name(self, layer):
+        return f"{layer.layer_name} ({layer.index_channel} - {layer.algorithm})"
+
     class Meta:
         model = ProcessedLayer
         exclude = ('region', 'district', 'farm_land', 'field')

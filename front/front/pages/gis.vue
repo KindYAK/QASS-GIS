@@ -53,7 +53,7 @@
             <v-autocomplete
               v-model="raw_layers_chosen"
               :items="raw_layers"
-              item-text="layer_name"
+              item-text="verbose_name"
               label="Исходные слои"
               @change="changeRawLayers"
               return-object
@@ -69,7 +69,7 @@
             <v-autocomplete
               v-model="processed_layers_chosen"
               :items="processed_layers"
-              item-text="layer_name"
+              item-text="verbose_name"
               label="Обработанные слои"
               @change="changeProcessedLayers"
               return-object

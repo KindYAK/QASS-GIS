@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 
 from mainapp.models import *
 
@@ -6,9 +7,24 @@ from mainapp.models import *
 class RegionSerializer(serializers.ModelSerializer):
     def __init__(self, instance=None, **kwargs):
         super().__init__(instance, **kwargs)
-        self.fields['districts'] = DistrictSerializer(many=True)
-        self.fields['region_raws'] = RawLayerSerializer(many=True)
-        self.fields['region_processed'] = ProcessedLayerSerializer(many=True)
+        self.fields['districts'] = SerializerMethodField()
+        self.fields['region_raws'] = SerializerMethodField()
+        self.fields['region_processed'] = SerializerMethodField()
+
+    def get_districts(self, region):
+        qs = District.objects.filter(enabled=True, region=region)
+        serializer = DistrictSerializer(instance=qs, many=True)
+        return serializer.data
+
+    def get_region_raws(self, region):
+        qs = RawLayer.objects.filter(enabled=True, region=region)
+        serializer = RawLayerSerializer(instance=qs, many=True)
+        return serializer.data
+
+    def get_region_processed(self, region):
+        qs = ProcessedLayer.objects.filter(enabled=True, region=region)
+        serializer = ProcessedLayerSerializer(instance=qs, many=True)
+        return serializer.data
 
     class Meta:
         model = Region
@@ -19,9 +35,24 @@ class RegionSerializer(serializers.ModelSerializer):
 class DistrictSerializer(serializers.ModelSerializer):
     def __init__(self, instance=None, **kwargs):
         super().__init__(instance, **kwargs)
-        self.fields['farmlands'] = FarmLandSerializer(many=True)
-        self.fields['district_raws'] = RawLayerSerializer(many=True)
-        self.fields['district_processed'] = ProcessedLayerSerializer(many=True)
+        self.fields['farmlands'] = SerializerMethodField()
+        self.fields['district_raws'] = SerializerMethodField()
+        self.fields['district_processed'] = SerializerMethodField()
+
+    def get_farmlands(self, district):
+        qs = FarmLand.objects.filter(enabled=True, district=district)
+        serializer = FarmLandSerializer(instance=qs, many=True)
+        return serializer.data
+
+    def get_district_raws(self, district):
+        qs = RawLayer.objects.filter(enabled=True, district=district)
+        serializer = RawLayerSerializer(instance=qs, many=True)
+        return serializer.data
+
+    def get_district_processed(self, district):
+        qs = ProcessedLayer.objects.filter(enabled=True, district=district)
+        serializer = ProcessedLayerSerializer(instance=qs, many=True)
+        return serializer.data
 
     class Meta:
         model = District
@@ -32,9 +63,24 @@ class DistrictSerializer(serializers.ModelSerializer):
 class FarmLandSerializer(serializers.ModelSerializer):
     def __init__(self, instance=None, **kwargs):
         super().__init__(instance, **kwargs)
-        self.fields['fields'] = FieldSerializer(many=True)
-        self.fields['farm_land_raws'] = RawLayerSerializer(many=True)
-        self.fields['farm_land_processed'] = ProcessedLayerSerializer(many=True)
+        self.fields['fields'] = SerializerMethodField(method_name="get_fields_")
+        self.fields['farm_land_raws'] = SerializerMethodField()
+        self.fields['farm_land_processed'] = SerializerMethodField()
+
+    def get_fields_(self, farm_land):
+        qs = Field.objects.filter(enabled=True, farm_land=farm_land)
+        serializer = FieldSerializer(instance=qs, many=True)
+        return serializer.data
+
+    def get_farm_land_raws(self, farm_land):
+        qs = RawLayer.objects.filter(enabled=True, farm_land=farm_land)
+        serializer = RawLayerSerializer(instance=qs, many=True)
+        return serializer.data
+
+    def get_farm_land_processed(self, farm_land):
+        qs = ProcessedLayer.objects.filter(enabled=True, farm_land=farm_land)
+        serializer = ProcessedLayerSerializer(instance=qs, many=True)
+        return serializer.data
 
     class Meta:
         model = FarmLand
@@ -45,8 +91,18 @@ class FarmLandSerializer(serializers.ModelSerializer):
 class FieldSerializer(serializers.ModelSerializer):
     def __init__(self, instance=None, **kwargs):
         super().__init__(instance, **kwargs)
-        self.fields['field_raws'] = RawLayerSerializer(many=True)
-        self.fields['field_processed'] = ProcessedLayerSerializer(many=True)
+        self.fields['field_raws'] = SerializerMethodField()
+        self.fields['field_processed'] = SerializerMethodField()
+
+    def get_field_raws(self, field):
+        qs = RawLayer.objects.filter(enabled=True, field=field)
+        serializer = RawLayerSerializer(instance=qs, many=True)
+        return serializer.data
+
+    def get_field_processed(self, field):
+        qs = ProcessedLayer.objects.filter(enabled=True, field=field)
+        serializer = ProcessedLayerSerializer(instance=qs, many=True)
+        return serializer.data
 
     class Meta:
         model = Field

@@ -89,9 +89,10 @@
         <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]">
           <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
           <l-lwms-tile-layer
+            v-for="layer in wmsLayer.layers"
             :key="wmsLayer.name"
-            :base-url="wmsLayer.url"
-            :layers="wmsLayer.layers"
+            :base-url="wmsLayer.url + (Boolean(cqlDict[layer]) ? `&CQL_FILTER=${cqlDict[layer]}`: '')"
+            :layers="layer"
             :visible="wmsLayer.visible"
             :name="wmsLayer.name"
             :attribution="wmsLayer.attribution"
@@ -112,6 +113,7 @@ export default {
   data() {
     return {
       wmsLayer: {
+        // url: GEOSERVER_WMS_URL + '&CQL_FILTER=AREA_NAME=\'Туркестанская область\'',
         url: GEOSERVER_WMS_URL,
         name: 'test',
         visible: true,
@@ -135,8 +137,26 @@ export default {
   },
   async asyncData({app}) {
     let regions = await app.$api.getRegions();
+    let cqlDict = {}
+    function addCql(cqlDict, obj) {
+      if(obj.layer_name && obj.cql_filter) {
+        cqlDict[obj.layer_name] = obj.cql_filter;
+      }
+    }
+
+    for(let region of regions.data){
+      addCql(cqlDict, region);
+      for(let district of region.districts){
+        addCql(cqlDict, district);
+        for(let farmland of district.farmlands){
+          addCql(cqlDict, farmland);
+        }
+      }
+    }
+
     return {
-      regions: regions.data
+      regions: regions.data,
+      cqlDict: cqlDict,
     }
   },
   methods: {

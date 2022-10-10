@@ -166,20 +166,13 @@ export default {
       this._map = this.map;
       this.map.on('click', this.getFeatureInfo, this);
     },
-    getFeatureInfo(evt){
+    async getFeatureInfo(evt) {
       var url = this.getFeatureInfoUrl(evt.latlng);
-      console.log("!!!", url);
-      // var showResults = L.Util.bind(this.showGetFeatureInfo, this);
-      // $.ajax({
-      //   url: url,
-      //   success: function (data, status, xhr) {
-      //     var err = typeof data === 'string' ? null : data;
-      //     showResults(err, evt.latlng, data);
-      //   },
-      //   error: function (xhr, status, error) {
-      //     showResults(error);
-      //   }
-      // });
+      this.$api.callGetFeatureInfo(url).then(
+        (data) => {this.showGetFeatureInfo("", evt.latlng, data.data);}
+      ).catch(
+        (error) => {this.showGetFeatureInfo(error);}
+      );
     },
     getFeatureInfoUrl: function (latlng) {
       // Construct a GetFeatureInfo request URL given a point
@@ -212,7 +205,7 @@ export default {
       // &INFO_FORMAT=application%2Fjson&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A32642&WIDTH=101&HEIGHT=101
       // &BBOX=535281.0048733532%2C4775841.143868151%2C539136.7536497804%2C4779696.892644578
 
-      return this.wmsLayer.url + "&" + L.Util.getParamString(params, this._url, true).substring(1);
+      return "&" + L.Util.getParamString(params, this._url, true).substring(1);
     },
     showGetFeatureInfo: function (err, latlng, content) {
       if (err) {
@@ -225,7 +218,7 @@ export default {
         .setLatLng(latlng)
         .setContent(content)
         .openOn(this._map);
-    }
+    },
     changeRegion() {
       this.districts = this.region.districts;
       this.district = null;

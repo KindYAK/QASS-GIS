@@ -1,4 +1,4 @@
-import {ROOT_API} from "~/settings/settings.js";
+import {GEOSERVER_WMS_URL, ROOT_API} from "~/settings/settings.js";
 
 export default function ({ $axios }, inject) {
   // Create a custom axios instance
@@ -14,6 +14,9 @@ export default function ({ $axios }, inject) {
     getRegions: async () => {
       return await apiClient({url: `regions/`, baseURL: ROOT_API, method: 'GET'});
     },
+    callGetFeatureInfo: async (url) => {
+      return await apiClient({url: url, baseURL: GEOSERVER_WMS_URL, method: 'GET'});
+    }
   };
 
   // Inject to context as $api

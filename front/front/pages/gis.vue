@@ -90,11 +90,11 @@
           <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
           <l-lwms-tile-layer
             v-for="layer in wmsLayer.layers"
-            :key="wmsLayer.name"
+            :key="layer"
             :base-url="wmsLayer.url + (Boolean(cqlDict[layer]) ? `&CQL_FILTER=${cqlDict[layer]}`: '')"
             :layers="layer"
             :visible="wmsLayer.visible"
-            :name="wmsLayer.name"
+            :name="layer"
             :attribution="wmsLayer.attribution"
             :transparent="true"
             format="image/png"

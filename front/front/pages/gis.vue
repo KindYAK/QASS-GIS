@@ -86,7 +86,7 @@
 
     <div id="map-wrap" class="relative z-0" style="height: 74vh">
       <client-only>
-        <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]">
+        <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]" @ready="handleReady()">
           <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
           <l-lwms-tile-layer
             v-for="layer in wmsLayer.layers"
@@ -108,6 +108,7 @@
 <script>
 import {GEOSERVER_WMS_URL} from '~/settings/settings'
 import {includesLayer, redrawLastLayer} from "~/utils/utils";
+import L from 'leaflet';
 
 export default {
   data() {
@@ -160,6 +161,71 @@ export default {
     }
   },
   methods: {
+    handleReady(){
+      this.map = this.$refs.myMap.mapObject;
+      this._map = this.map;
+      this.map.on('click', this.getFeatureInfo, this);
+    },
+    getFeatureInfo(evt){
+      var url = this.getFeatureInfoUrl(evt.latlng);
+      console.log("!!!", url);
+      // var showResults = L.Util.bind(this.showGetFeatureInfo, this);
+      // $.ajax({
+      //   url: url,
+      //   success: function (data, status, xhr) {
+      //     var err = typeof data === 'string' ? null : data;
+      //     showResults(err, evt.latlng, data);
+      //   },
+      //   error: function (xhr, status, error) {
+      //     showResults(error);
+      //   }
+      // });
+    },
+    getFeatureInfoUrl: function (latlng) {
+      // Construct a GetFeatureInfo request URL given a point
+      var point = this._map.latLngToContainerPoint(latlng, this._map.getZoom());
+      var size = this._map.getSize();
+      var layer_name = this.wmsLayer.layers.join(",");
+      // var layer_name = this.wmsLayer.layers[this.wmsLayer.layers.length - 1];
+
+      var params = {
+        request: 'GetFeatureInfo',
+        service: 'WMS',
+        srs: 'EPSG:4326',
+        // styles: this.wmsParams.styles,
+        transparent: true,
+        version: "1.1.1",
+        format: "image/jpeg",
+        bbox: this._map.getBounds().toBBoxString(),
+        height: size.y,
+        width: size.x,
+        layers: layer_name,
+        query_layers: layer_name,
+        info_format: 'text/html',
+        x: point.x,
+        y: point.y,
+      };
+
+      // Example
+      // http://qass.iict.kz/geoserver/qass/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=image%2Fjpeg
+      // &TRANSPARENT=true&QUERY_LAYERS=qass%3Abaidibek_tif&STYLES&LAYERS=qass%3Abaidibek_tif&exceptions=application%2Fvnd.ogc.se_inimage
+      // &INFO_FORMAT=application%2Fjson&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A32642&WIDTH=101&HEIGHT=101
+      // &BBOX=535281.0048733532%2C4775841.143868151%2C539136.7536497804%2C4779696.892644578
+
+      return this.wmsLayer.url + "&" + L.Util.getParamString(params, this._url, true).substring(1);
+    },
+    showGetFeatureInfo: function (err, latlng, content) {
+      if (err) {
+        console.log(err);
+        return;
+      } // do nothing if there's an error
+
+      // Otherwise show the content in a popup, or something.
+      L.popup({maxWidth: 800})
+        .setLatLng(latlng)
+        .setContent(content)
+        .openOn(this._map);
+    }
     changeRegion() {
       this.districts = this.region.districts;
       this.district = null;

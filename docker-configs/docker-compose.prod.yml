@@ -7,7 +7,6 @@ services:
       - ../certbot/conf/live/qass.iict.kz/:/etc/certs
     environment:
       - HTTPS_PORT=443
-#      - HTTPS_NAME=https://qass.iict.kz
       - SSL=true
 
   web:

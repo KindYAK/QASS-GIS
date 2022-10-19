@@ -16,6 +16,5 @@ COPY ./front/package.json /front/package.json
 COPY ./front/yarn.lock /front/yarn.lock
 RUN yarn install
 COPY ./front/ /front/
-RUN npm --depth 20 update --save caniuse-lite browserslist
 RUN yarn run build
 RUN yarn run generate

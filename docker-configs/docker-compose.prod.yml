@@ -6,6 +6,9 @@ services:
       - /mnt/raid1/geoserver-data:/opt/geoserver/data_dir
       - ../certbot/conf/live/qass.iict.kz/:/etc/certs
     environment:
+      - HTTP_SCHEME=https
+      - HTTP_PROXY_NAME=qass.iict.kz
+      - HTTP_PROXY_PORT=443
       - HTTPS_PORT=443
       - SSL=true
 

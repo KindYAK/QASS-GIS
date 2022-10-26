@@ -2,8 +2,8 @@ from django.db import models
 
 
 class GeoObject(models.Model):
-    layer_name = models.CharField(null=True, blank=True, max_length=15000, unique=True, verbose_name="Название слоя в GeoServer")
-    cql_filter = models.CharField(null=True, blank=True, max_length=15000, unique=True, verbose_name="CQL фильтр")
+    layer_name = models.CharField(null=True, blank=True, max_length=15000, verbose_name="Название слоя в GeoServer")
+    cql_filter = models.CharField(null=True, blank=True, max_length=15000, verbose_name="CQL фильтр")
     lat = models.FloatField(null=True, blank=True, verbose_name="Широта")
     lon = models.FloatField(null=True, blank=True, verbose_name="Долгота")
     zoom_level = models.FloatField(null=True, blank=True, verbose_name="Уровень Zoomа")
@@ -11,6 +11,7 @@ class GeoObject(models.Model):
 
     class Meta:
         abstract = True
+        unique_together = ('layer_name', 'cql_filter')
 
 
 class Region(GeoObject):

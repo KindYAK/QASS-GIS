@@ -89,12 +89,12 @@
         <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]" @ready="handleReady()">
           <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
           <l-lwms-tile-layer
-            v-for="layer in wmsLayer.layers"
-            :key="layer"
-            :base-url="wmsLayer.url + (Boolean(cqlDict[layer]) ? `&CQL_FILTER=${cqlDict[layer]}`: '')"
+            v-for="(layer, index) in wmsLayer.layers"
+            :key="wmsChosenLayersIds[index]"
+            :base-url="wmsLayer.url + (Boolean(cqlDict[wmsChosenLayersIds[index]]) ? `&CQL_FILTER=${cqlDict[wmsChosenLayersIds[index]]}`: '')"
             :layers="layer"
             :visible="wmsLayer.visible"
-            :name="layer"
+            :name="wmsChosenLayersIds[index]"
             :attribution="wmsLayer.attribution"
             :transparent="true"
             format="image/png"
@@ -123,6 +123,7 @@ export default {
         transparent: false,
         attribution: 'РГП на ПХВ "ИИВТ" КН МОН РК',
       },
+      wmsChosenLayersIds: [],
       districts: [],
       farmlands: [],
       fields: [],
@@ -139,18 +140,18 @@ export default {
   async asyncData({app}) {
     let regions = await app.$api.getRegions();
     let cqlDict = {}
-    function addCql(cqlDict, obj) {
+    function addCql(cqlDict, obj, pref) {
       if(obj.layer_name && obj.cql_filter) {
-        cqlDict[obj.layer_name] = obj.cql_filter;
+        cqlDict[pref + obj.id] = obj.cql_filter;
       }
     }
 
     for(let region of regions.data){
-      addCql(cqlDict, region);
+      addCql(cqlDict, region, "region");
       for(let district of region.districts){
-        addCql(cqlDict, district);
+        addCql(cqlDict, district, "district");
         for(let farmland of district.farmlands){
-          addCql(cqlDict, farmland);
+          addCql(cqlDict, farmland, "farmland");
         }
       }
     }
@@ -226,8 +227,10 @@ export default {
       this.field = null;
 
       this.wmsLayer.layers.length = 0;
+      this.wmsChosenLayersIds.length = 0;
       if(this.region.layer_name) {
         this.wmsLayer.layers.push(this.region.layer_name);
+        this.wmsChosenLayersIds.push("region" + this.region.id);
       }
 
       if(this.region.lat && this.region.lon && this.region.zoom_level) {
@@ -260,11 +263,14 @@ export default {
       this.field = null;
 
       this.wmsLayer.layers.length = 0;
+      this.wmsChosenLayersIds.length = 0;
       if(this.region.layer_name) {
         this.wmsLayer.layers.push(this.region.layer_name);
+        this.wmsChosenLayersIds.push("region" + this.region.id);
       }
       if(this.district.layer_name) {
         this.wmsLayer.layers.push(this.district.layer_name);
+        this.wmsChosenLayersIds.push("district" + this.district.id);
       }
 
       if(this.district.lat && this.district.lon && this.district.zoom_level) {
@@ -308,14 +314,18 @@ export default {
       this.field = null;
 
       this.wmsLayer.layers.length = 0;
+      this.wmsChosenLayersIds.length = 0;
       if (this.region.layer_name) {
         this.wmsLayer.layers.push(this.region.layer_name);
+        this.wmsChosenLayersIds.push("region" + this.region.id);
       }
       if (this.district.layer_name) {
         this.wmsLayer.layers.push(this.district.layer_name);
+        this.wmsChosenLayersIds.push("district" + this.district.id);
       }
       if (this.farmland.layer_name) {
         this.wmsLayer.layers.push(this.farmland.layer_name);
+        this.wmsChosenLayersIds.push("farmland" + this.farmland.id);
       }
 
       if (this.farmland.lat && this.farmland.lon && this.farmland.zoom_level) {
@@ -367,17 +377,19 @@ export default {
     },
     changeProcessedLayers(){
       for(let layer of this.processed_layers_chosen){
-        if(this.wmsLayer.layers.includes(layer.layer_name)){
+        if(this.wmsChosenLayersIds.includes("proc" + layer.id)){
           continue
         }
         this.wmsLayer.layers.push(layer.layer_name);
+        this.wmsChosenLayersIds.push("proc" + layer.id);
       }
 
       for(let layer of this.processed_layers) {
-        if(this.wmsLayer.layers.includes(layer.layer_name) && !this.processed_layers_chosen.includes(layer)){
-          const index = this.wmsLayer.layers.indexOf(layer.layer_name);
+        if(this.wmsChosenLayersIds.includes("proc" + layer.id) && !this.processed_layers_chosen.includes(layer)){
+          const index = this.wmsChosenLayersIds.indexOf("proc" + layer.id);
           if (index > -1) {
             this.wmsLayer.layers.splice(index, 1);
+            this.wmsChosenLayersIds.splice(index, 1);
           }
         }
       }
@@ -385,17 +397,19 @@ export default {
     },
     changeRawLayers(){
       for(let layer of this.raw_layers_chosen){
-        if(this.wmsLayer.layers.includes(layer.layer_name)){
+        if(this.wmsChosenLayersIds.includes("raw" + layer.id)){
           continue
         }
         this.wmsLayer.layers.push(layer.layer_name);
+        this.wmsChosenLayersIds.push("raw" + layer.id);
       }
 
       for(let layer of this.raw_layers) {
-        if(this.wmsLayer.layers.includes(layer.layer_name) && !this.raw_layers_chosen.includes(layer)){
-          const index = this.wmsLayer.layers.indexOf(layer.layer_name);
+        if(this.wmsChosenLayersIds.includes("raw" + layer.id) && !this.raw_layers_chosen.includes(layer)){
+          const index = this.wmsChosenLayersIds.indexOf("raw" + layer.id);
           if (index > -1) {
             this.wmsLayer.layers.splice(index, 1);
+            this.wmsChosenLayersIds.splice(index, 1);
           }
         }
       }

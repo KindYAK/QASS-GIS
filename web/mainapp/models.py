@@ -27,11 +27,12 @@ class Region(GeoObject):
 
 class District(GeoObject):
     region = models.ForeignKey('Region', on_delete=models.PROTECT, verbose_name="Область", related_name="districts")
-    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
+    name = models.CharField(max_length=50, verbose_name="Название")
 
     class Meta:
         verbose_name = "Район"
         verbose_name_plural = "Районы"
+        unique_together = ('name', 'region')
 
     def __str__(self):
         return f"Район {self.name} в {self.region}"
@@ -39,11 +40,12 @@ class District(GeoObject):
 
 class FarmLand(GeoObject):
     district = models.ForeignKey('District', on_delete=models.PROTECT, verbose_name="Район", related_name="farmlands")
-    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
+    name = models.CharField(max_length=50, verbose_name="Название")
 
     class Meta:
         verbose_name = "Сельхоз угодье"
         verbose_name_plural = "Сельхоз угодья"
+        unique_together = ('name', 'district')
 
     def __str__(self):
         return f"Угодье {self.name} в {self.district}"
@@ -51,11 +53,12 @@ class FarmLand(GeoObject):
 
 class Field(GeoObject):
     farm_land = models.ForeignKey('FarmLand', on_delete=models.PROTECT, verbose_name="Сельхоз угодье", related_name="fields")
-    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
+    name = models.CharField(max_length=50, verbose_name="Название")
 
     class Meta:
         verbose_name = "Поле"
         verbose_name_plural = "Поля"
+        unique_together = ('name', 'farm_land')
 
     def __str__(self):
         return f"Поле {self.name} в {self.farm_land}"

@@ -7,8 +7,25 @@
       app
     >
       <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
+        <v-list-item class="bottom-item"
+          v-for="(item, i) in itemsTop"
+          :key="i"
+          :to="item.to"
+          router
+          exact
+        >
+          <v-list-item-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title" />
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+
+      <v-list style="position: absolute; bottom: 0; width: 100%; padding-bottom: 0;">
+        <v-list-item class="bottom-item"
+          v-for="(item, i) in itemsBottom"
           :key="i"
           :to="item.to"
           router
@@ -54,11 +71,18 @@ export default {
       clipped: false,
       drawer: true,
       fixed: false,
-      items: [
+      itemsTop: [
+        {
+          icon: 'mdi-map-legend',
+          title: 'ГИС',
+          to: '/'
+        }
+      ],
+      itemsBottom: [
         {
           icon: 'mdi-information-outline',
           title: 'О проекте',
-          to: '/'
+          to: '/about/'
         },
         {
           icon: 'mdi-book-alphabet',
@@ -69,11 +93,6 @@ export default {
           icon: 'mdi-archive-search-outline',
           title: 'Архив ЮКО',
           to: '/archive_uko/'
-        },
-        {
-          icon: 'mdi-map-legend',
-          title: 'ГИС',
-          to: '/gis/'
         },
       ],
       title: 'QASS - ГИС для оценки деградации почв и засоленности'

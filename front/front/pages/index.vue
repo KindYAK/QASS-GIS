@@ -1,91 +1,420 @@
 <template>
-  <div class="text-justify pl-10 pr-10">
-    <div class="text-h4 mb-5">
-      «Космический мониторинг и ГИС для количественной оценки засоленности почв и деградации сельскохозяйственных угодий Юга Казахстана» (BR 10965172)
+  <div>
+    <v-card class="mb-5">
+      <v-container fluid>
+        <v-row>
+          <v-col cols="4">
+            <v-autocomplete
+              v-model="region"
+              :items="regions"
+              item-text="name"
+              label="Область"
+              @change="changeRegion"
+              return-object
+              auto-select-first
+              dense
+              solo
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+
+          <v-col cols="4">
+            <v-autocomplete
+              v-model="district"
+              :items="districts"
+              item-text="name"
+              label="Район"
+              @change="changeDistrict"
+              return-object
+              auto-select-first
+              dense
+              solo
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+
+          <v-col cols="4">
+            <v-autocomplete
+              v-model="farmland"
+              :items="farmlands"
+              item-text="name"
+              label="Угодье"
+              @change="changeFarmland"
+              return-object
+              auto-select-first
+              dense
+              solo
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="6">
+            <v-autocomplete
+              v-model="raw_layers_chosen"
+              :items="raw_layers"
+              item-text="verbose_name"
+              label="Исходные слои"
+              @change="changeRawLayers"
+              return-object
+              auto-select-first
+              dense
+              solo
+              multiple
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+
+          <v-col cols="6">
+            <v-autocomplete
+              v-model="processed_layers_chosen"
+              :items="processed_layers"
+              item-text="verbose_name"
+              label="Обработанные слои"
+              @change="changeProcessedLayers"
+              return-object
+              auto-select-first
+              dense
+              solo
+              multiple
+              hide-details
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
+
+    <div id="map-wrap" class="relative z-0" style="height: 74vh">
+      <client-only>
+        <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]" @ready="handleReady()">
+          <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
+          <l-lwms-tile-layer
+            v-for="(layer, index) in wmsLayer.layers"
+            :key="wmsChosenLayersIds[index]"
+            :base-url="wmsLayer.url + (Boolean(cqlDict[wmsChosenLayersIds[index]]) ? `&CQL_FILTER=${cqlDict[wmsChosenLayersIds[index]]}`: '')"
+            :layers="layer"
+            :visible="wmsLayer.visible"
+            :name="wmsChosenLayersIds[index]"
+            :attribution="wmsLayer.attribution"
+            :transparent="true"
+            format="image/png"
+            layer-type="base"></l-lwms-tile-layer>
+        </l-map>
+      </client-only>
     </div>
-
-    <div class="text-body-1 mb-5">
-      <b>Цель:</b> «Создание веб-геоинформационного сервиса оперативного мониторинга количественной оценки степени засоления почв и деградации сельскохозяйственных угодий Юга Казахстана на основе данных дистанционного зондирования Земли».
-    </div>
-
-    <div class="text-body-1 mb-5">
-      По техническому заданию Заказчика в данной программе объектом и предметом исследования являются засоленные сельскохозяйственные угодий Южного Казахстана, у которых пахотный слой почвы на уровне (0-30 см). Масштаб требуемых карт засоления М 1:300000. Связь масштаба карты с информационной насыщенностью определяется минимальным объектом, который подлежит картированию (нормативная документация: ГОСТ Р 51608).
-    </div>
-
-    <div class="text-body-1 mb-5">
-      <b>Методы исследования:</b> Экспертное дешифрирование, стандартные статистические методы корреляционного анализа дистанционно-регистрируемых параметров (NDVI, LST и др.) и наземной информации. Методы кластеризации и классификации спутниковых данных.
-    </div>
-
-    <div class="text-body-1 mb-5">
-      <b>Область применения и внедрение результатов:</b> Засоление поливной пашни и деградация сельскохозяйственных земель Юга Казахстана.
-    </div>
-
-    <div class="text-body-1 mb-5">
-      <b>Текущие результаты:</b>
-    </div>
-
-    <div class="text-body-1 mb-5">
-      Сформирован архивов наземных данных по засолению полей на проектной территории: исторические данные периода 2002-2020 гг. (по материалам Гидрогеолого-мелиоративных экспедиций МСХ РК, соответствующих регионов и др. источников).
-    </div>
-
-    <div class="text-body-1 mb-5">
-      Проведены собственные наземные обследования засоленности поливной пашни проектных территорий, включающих отбор образцов почв в ключевых участках, анализ содержания солей и экспертное, ранговое описание состояния сельскохозяйственных полей по классам засоления ФАО, в рамках маршрутных обследований.
-    </div>
-
-    <div class="text-body-1 mb-5">
-      Проанализированы доступные открытые архивные данные, получено, что в системе   ГУ «Управления земельных отношений» областного уровня хранятся различные картографические материалы, датированные еще временами бывшего СССР (с 1972 года). Архивы не оцифрованы и хранятся в бумажном варианте.
-    </div>
-
-    <div class="text-body-1 mb-5">
-      Картирование засоления поливной пашни встречает существенные технические трудности. Обзор научной литературы показал, наличие лишь отдельных работ, касающихся этой задачи. Засоление поливной пашни отличается значительной изменчивостью в течение сезона. Практически представляют интерес карты весеннего и осеннего засоление. Для решения задачи картирования засоления поливной пашни Юга Казахстана использованы следующие спутниковые продукты:
-    </div>
-
-    <ul style="list-style-type: revert">
-      <li>
-        Вегетационный индекс NDVI. Формат отдельных сцен Sentinel-2, с разрешением 10м. Мониторинговые данные периода с 2003- по текущий момент (источник — FEWS NET), декадное обновление, разрешение до 250 м, в шкалах: абсолютные значения NDVI; отклонение от среднего; оценка глубины отклонения, в масштабе исторически зарегистрированных вариаций (многолетние минимум – максимум) в данном месте в данное время.
-      </li>
-      <li>
-        Индексы засоления (выбор индексов будет продолжен). Формат отдельных сцен Sentinel-2 и (или) Landsat -8 разрешение (10-30 м) в весенний период (март-апрель).
-      </li>
-      <li>
-        Снимки Sentinel-2, Landsat-8 разрешение (10-30 м) оптические каналы. Формат отдельных сцен для оценки спектральных характеристик подстилающей поверхности, выявления затопления и переувлажнения поливной пашни в течение года, восстановления рисовых севооборотов и оценки осенне-зимних промывок полей, мониторинга площади водных зеркал основных водохранилищ региона (оценка текущей наполненности и режимов сработки резервуаров для диагностики водности сезона).
-      </li>
-      <li>
-        Поверхностная температура (Land Surface Temperature). В формате мониторинга периода с 2003 по текущий момент (источник — FEWS NET), декадное обновление, разрешение 5 км; в шкалах: абсолютные значения; отклонение от среднего; количественная оценка величины охлаждения пашни из-за ее ирригации (Irrigation Cooling Effect).
-      </li>
-      <li>
-        Высота снежного покрова (Snow Depth). В формате мониторинга периода с 2001- по текущий момент (источник — FEWS NET), декадное обновление, разрешение 1 км.
-      </li>
-    </ul>
-
-    <div class="text-body-1 mb-5">
-      Практическая значимость описанного явления связана с востребованностью долгосрочного прогноза водности рек Центральной Азии. Прогноз объемов речного стока влияет на планирование площадей посевов под различными культурами. “Долгая память” в многолетнем режиме снежности высокогорья в Тянь-Шане оправдывает применимость простейшего «инерционного» прогноза. При котором, снежность будущего года предполагается близкой к уровню текущего года.
-    </div>
-
-    <div class="text-body-1 mb-5">
-      В процессе проведения научно-исследовательских мероприятий данного этапа проекта разработана документация по геопарталу, веб-геоинформационному сервису оперативного мониторинга включающая  рекомендации по архитектуре и программным решениями для разработки геоинформационной системы количественной оценки засоления почв.
-    </div>
-
-    <div class="text-body-1 mb-5">
-      Работа выполнена при поддержке гранта МОН РК ИРН BR10965172, выполняемой в Институте информационных и вычислительных технологий КН МОН РК, по договору №362 от 07 сентября 2021 года
-    </div>
-
-    <img :src='`${STATIC_URL}img/main1.png`'>
-    <img :src='`${STATIC_URL}img/main2.png`'>
   </div>
 </template>
 
 <script>
-import {STATIC_URL} from '~/settings/settings'
+import {GEOSERVER_WMS_URL} from '~/settings/settings'
+import {includesLayer, redrawLastLayer} from "~/utils/utils";
+import L from 'leaflet';
 
 export default {
   data() {
     return {
-      STATIC_URL: STATIC_URL
+      wmsLayer: {
+        // url: GEOSERVER_WMS_URL + '&CQL_FILTER=AREA_NAME=\'Туркестанская область\'',
+        url: GEOSERVER_WMS_URL,
+        name: 'test',
+        visible: true,
+        format: 'image/png',
+        layers: [],
+        transparent: false,
+        attribution: 'РГП на ПХВ "ИИВТ" КН МОН РК',
+      },
+      wmsChosenLayersIds: [],
+      districts: [],
+      farmlands: [],
+      fields: [],
+      region: null,
+      district: null,
+      farmland: null,
+      field: null,
+      processed_layers: [],
+      raw_layers: [],
+      processed_layers_chosen: [],
+      raw_layers_chosen: [] ,
+    }
+  },
+  async asyncData({app}) {
+    let regions = await app.$api.getRegions();
+    let cqlDict = {}
+    function addCql(cqlDict, obj, pref) {
+      if(obj.layer_name && obj.cql_filter) {
+        cqlDict[pref + obj.id] = obj.cql_filter;
+      }
+    }
+
+    for(let region of regions.data){
+      addCql(cqlDict, region, "region");
+      for(let district of region.districts){
+        addCql(cqlDict, district, "district");
+        for(let farmland of district.farmlands){
+          addCql(cqlDict, farmland, "farmland");
+        }
+      }
+    }
+
+    return {
+      regions: regions.data,
+      cqlDict: cqlDict,
     }
   },
   methods: {
+    handleReady(){
+      this.map = this.$refs.myMap.mapObject;
+      this._map = this.map;
+      this.map.on('click', this.getFeatureInfo, this);
+    },
+    async getFeatureInfo(evt) {
+      var url = this.getFeatureInfoUrl(evt.latlng);
+      this.$api.callGetFeatureInfo(url).then(
+        (data) => {this.showGetFeatureInfo("", evt.latlng, data.data);}
+      ).catch(
+        (error) => {this.showGetFeatureInfo(error);}
+      );
+    },
+    getFeatureInfoUrl: function (latlng) {
+      // Construct a GetFeatureInfo request URL given a point
+      var point = this._map.latLngToContainerPoint(latlng, this._map.getZoom());
+      var size = this._map.getSize();
+      var layer_name = this.wmsLayer.layers.join(",");
+      // var layer_name = this.wmsLayer.layers[this.wmsLayer.layers.length - 1];
 
+      var params = {
+        request: 'GetFeatureInfo',
+        service: 'WMS',
+        srs: 'EPSG:4326',
+        // styles: this.wmsParams.styles,
+        transparent: true,
+        version: "1.1.1",
+        format: "image/jpeg",
+        bbox: this._map.getBounds().toBBoxString(),
+        height: size.y,
+        width: size.x,
+        layers: layer_name,
+        query_layers: layer_name,
+        info_format: 'text/html',
+        x: point.x,
+        y: point.y,
+      };
+
+      // Example
+      // http://qass.iict.kz/geoserver/qass/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=image%2Fjpeg
+      // &TRANSPARENT=true&QUERY_LAYERS=qass%3Abaidibek_tif&STYLES&LAYERS=qass%3Abaidibek_tif&exceptions=application%2Fvnd.ogc.se_inimage
+      // &INFO_FORMAT=application%2Fjson&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A32642&WIDTH=101&HEIGHT=101
+      // &BBOX=535281.0048733532%2C4775841.143868151%2C539136.7536497804%2C4779696.892644578
+
+      return "&" + L.Util.getParamString(params, this._url, true).substring(1);
+    },
+    showGetFeatureInfo: function (err, latlng, content) {
+      if (err) {
+        console.log(err);
+        return;
+      } // do nothing if there's an error
+
+      // Otherwise show the content in a popup, or something.
+      L.popup({maxWidth: 800})
+        .setLatLng(latlng)
+        .setContent(content)
+        .openOn(this._map);
+    },
+    changeRegion() {
+      this.districts = this.region.districts;
+      this.district = null;
+      this.farmland = null;
+      this.field = null;
+
+      this.wmsLayer.layers.length = 0;
+      this.wmsChosenLayersIds.length = 0;
+      if(this.region.layer_name) {
+        this.wmsLayer.layers.push(this.region.layer_name);
+        this.wmsChosenLayersIds.push("region" + this.region.id);
+      }
+
+      if(this.region.lat && this.region.lon && this.region.zoom_level) {
+        this.$refs.myMap.mapObject.setView([this.region.lat, this.region.lon], this.region.zoom_level)
+      }
+
+      this.raw_layers = [];
+      this.raw_layers_chosen = [];
+      for(let layer of this.region.region_raws){
+        if(includesLayer(this.raw_layers, layer)){
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+
+      this.processed_layers = [];
+      this.processed_layers_chosen = [];
+      for(let layer of this.region.region_processed){
+        if(includesLayer(this.processed_layers, layer)){
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
+    },
+    changeDistrict() {
+      this.farmlands = this.district.farmlands;
+
+      this.farmland = null;
+      this.field = null;
+
+      this.wmsLayer.layers.length = 0;
+      this.wmsChosenLayersIds.length = 0;
+      if(this.region.layer_name) {
+        this.wmsLayer.layers.push(this.region.layer_name);
+        this.wmsChosenLayersIds.push("region" + this.region.id);
+      }
+      if(this.district.layer_name) {
+        this.wmsLayer.layers.push(this.district.layer_name);
+        this.wmsChosenLayersIds.push("district" + this.district.id);
+      }
+
+      if(this.district.lat && this.district.lon && this.district.zoom_level) {
+        this.$refs.myMap.mapObject.setView([this.district.lat, this.district.lon], this.district.zoom_level)
+      }
+
+      this.raw_layers = [];
+      this.raw_layers_chosen = [];
+      for(let layer of this.region.region_raws){
+        if(includesLayer(this.raw_layers, layer)){
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+      for(let layer of this.district.district_raws){
+        if(includesLayer(this.raw_layers, layer)){
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+
+      this.processed_layers = [];
+      this.processed_layers_chosen = [];
+      for(let layer of this.region.region_processed){
+        if(includesLayer(this.processed_layers, layer)){
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      for(let layer of this.district.district_processed){
+        if(includesLayer(this.processed_layers, layer)){
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
+    },
+    changeFarmland() {
+      this.fields = this.farmland.fields;
+
+      this.field = null;
+
+      this.wmsLayer.layers.length = 0;
+      this.wmsChosenLayersIds.length = 0;
+      if (this.region.layer_name) {
+        this.wmsLayer.layers.push(this.region.layer_name);
+        this.wmsChosenLayersIds.push("region" + this.region.id);
+      }
+      if (this.district.layer_name) {
+        this.wmsLayer.layers.push(this.district.layer_name);
+        this.wmsChosenLayersIds.push("district" + this.district.id);
+      }
+      if (this.farmland.layer_name) {
+        this.wmsLayer.layers.push(this.farmland.layer_name);
+        this.wmsChosenLayersIds.push("farmland" + this.farmland.id);
+      }
+
+      if (this.farmland.lat && this.farmland.lon && this.farmland.zoom_level) {
+        this.$refs.myMap.mapObject.setView([this.farmland.lat, this.farmland.lon], this.farmland.zoom_level)
+      }
+
+      this.raw_layers = [];
+      this.raw_layers_chosen = [];
+      for (let layer of this.region.region_raws) {
+        if (includesLayer(this.raw_layers, layer)) {
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+      for (let layer of this.district.district_raws) {
+        if (includesLayer(this.raw_layers, layer)) {
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+      for (let layer of this.farmland.farm_land_raws) {
+        if (includesLayer(this.raw_layers, layer)) {
+          continue
+        }
+        this.raw_layers.push(layer);
+      }
+
+      this.processed_layers = [];
+      this.processed_layers_chosen = [];
+      for (let layer of this.region.region_processed) {
+        if (includesLayer(this.processed_layers, layer)) {
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      for (let layer of this.district.district_processed) {
+        if (includesLayer(this.processed_layers, layer)) {
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      for (let layer of this.farmland.farm_land_processed) {
+        if (includesLayer(this.processed_layers, layer)) {
+          continue
+        }
+        this.processed_layers.push(layer);
+      }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
+    },
+    changeProcessedLayers(){
+      for(let layer of this.processed_layers_chosen){
+        if(this.wmsChosenLayersIds.includes("proc" + layer.id)){
+          continue
+        }
+        this.wmsLayer.layers.push(layer.layer_name);
+        this.wmsChosenLayersIds.push("proc" + layer.id);
+      }
+
+      for(let layer of this.processed_layers) {
+        if(this.wmsChosenLayersIds.includes("proc" + layer.id) && !this.processed_layers_chosen.includes(layer)){
+          const index = this.wmsChosenLayersIds.indexOf("proc" + layer.id);
+          if (index > -1) {
+            this.wmsLayer.layers.splice(index, 1);
+            this.wmsChosenLayersIds.splice(index, 1);
+          }
+        }
+      }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
+    },
+    changeRawLayers(){
+      for(let layer of this.raw_layers_chosen){
+        if(this.wmsChosenLayersIds.includes("raw" + layer.id)){
+          continue
+        }
+        this.wmsLayer.layers.push(layer.layer_name);
+        this.wmsChosenLayersIds.push("raw" + layer.id);
+      }
+
+      for(let layer of this.raw_layers) {
+        if(this.wmsChosenLayersIds.includes("raw" + layer.id) && !this.raw_layers_chosen.includes(layer)){
+          const index = this.wmsChosenLayersIds.indexOf("raw" + layer.id);
+          if (index > -1) {
+            this.wmsLayer.layers.splice(index, 1);
+            this.wmsChosenLayersIds.splice(index, 1);
+          }
+        }
+      }
+      redrawLastLayer(this.$refs.myMap.mapObject._layers);
+    }
   }
 }
 </script>

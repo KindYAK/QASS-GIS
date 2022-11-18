@@ -23,6 +23,11 @@
         </v-list-item>
       </v-list>
 
+
+      <layers-menu
+        :regions="$store.state.layersMenu"
+      ></layers-menu>
+
       <v-list style="position: absolute; bottom: 0; width: 100%; padding-bottom: 0;">
         <v-list-item class="bottom-item"
           v-for="(item, i) in itemsBottom"
@@ -64,8 +69,10 @@
 </template>
 
 <script>
+import LayersMenu from "~/components/layersMenu";
 export default {
   name: 'DefaultLayout',
+  components: {LayersMenu},
   data () {
     return {
       clipped: false,

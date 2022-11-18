@@ -137,7 +137,7 @@ export default {
       raw_layers_chosen: [] ,
     }
   },
-  async asyncData({app}) {
+  async asyncData({app, store}) {
     let regions = await app.$api.getRegions();
     let cqlDict = {}
     function addCql(cqlDict, obj, pref) {
@@ -155,6 +155,8 @@ export default {
         }
       }
     }
+
+    store.commit('SET_LAYERS_MENU', regions.data)
 
     return {
       regions: regions.data,

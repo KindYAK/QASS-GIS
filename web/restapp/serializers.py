@@ -112,7 +112,7 @@ class FieldSerializer(serializers.ModelSerializer):
 
 class RawLayerSerializer(serializers.ModelSerializer):
     def get_verbose_name(self, layer):
-        return f"{layer.layer_name} ({layer.index_channel} - {layer.satellite})"
+        return f"{layer.index_channel} - {layer.satellite} ({layer.layer_name})"
 
     class Meta:
         model = RawLayer
@@ -124,7 +124,7 @@ class ProcessedLayerSerializer(serializers.ModelSerializer):
     verbose_name = SerializerMethodField()
 
     def get_verbose_name(self, layer):
-        return f"{layer.layer_name} ({layer.index_channel} - {layer.algorithm})"
+        return f"{layer.index_channel} - {layer.algorithm} ({layer.layer_name})"
 
     class Meta:
         model = ProcessedLayer

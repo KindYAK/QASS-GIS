@@ -1,5 +1,13 @@
 <template>
   <div>
+    <style>
+      .v-icon--disabled {
+        display: none !important;
+      }
+      .theme--light.v-treeview .v-treeview-node--disabled > .v-treeview-node__root > .v-treeview-node__content {
+        color: black !important;
+      }
+    </style>
     <v-card class="mb-5">
       <v-container fluid>
         <v-row>
@@ -156,7 +164,83 @@ export default {
       }
     }
 
-    store.commit('SET_LAYERS_MENU', regions.data)
+    var menuLayersObj = [];
+    for (let region of regions.data) {
+      let newRegion = {
+        "name": region.name,
+        "id": "region" + region.id,
+        "locked": !Boolean(region.layer_name),
+        "children": [],
+      };
+      for (let layer of region.region_raws) {
+        newRegion.children.push(
+          {
+            "name": layer.verbose_name,
+            "id": "raw" + layer.id,
+          }
+        );
+      }
+      for (let layer of region.region_processed) {
+        newRegion.children.push(
+          {
+            "name": layer.verbose_name,
+            "id": "proc" + layer.id,
+          }
+        );
+      }
+      for (let district of region.districts) {
+        let newDistrict = {
+          "name": district.name,
+          "id": "district" + district.id,
+          "locked": !Boolean(district.layer_name),
+          "children": [],
+        }
+        for (let layer of district.district_raws) {
+          newDistrict.children.push(
+            {
+              "name": layer.verbose_name,
+              "id": "raw" + layer.id,
+            }
+          );
+        }
+        for (let layer of district.district_processed) {
+          newDistrict.children.push(
+            {
+              "name": layer.verbose_name,
+              "id": "proc" + layer.id,
+            }
+          );
+        }
+        for (let farmland of district.farmlands) {
+          let newFarmland = {
+            "name": farmland.name,
+            "id": "farmland" + farmland.id,
+            "locked": !Boolean(farmland.layer_name),
+            "children": [],
+          }
+          for (let layer of farmland.farmland_raws) {
+            newFarmland.children.push(
+              {
+                "name": layer.verbose_name,
+                "id": "raw" + layer.id,
+              }
+            );
+          }
+          for (let layer of farmland.farmland_processed) {
+            newFarmland.children.push(
+              {
+                "name": layer.verbose_name,
+                "id": "proc" + layer.id,
+              }
+            );
+          }
+          newDistrict.children.push(newFarmland)
+        }
+        newRegion.children.push(newDistrict);
+      }
+      menuLayersObj.push(newRegion);
+    }
+    store.commit('SET_LAYERS_MENU', menuLayersObj)
 
     return {
       regions: regions.data,

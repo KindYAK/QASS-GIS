@@ -1,6 +1,7 @@
 <template>
   <v-app dark>
     <v-navigation-drawer
+      width="400px"
       v-model="drawer"
       :clipped="clipped"
       fixed
@@ -23,9 +24,10 @@
         </v-list-item>
       </v-list>
 
-
       <layers-menu
+        style="overflow-y: scroll; height: calc(100% - (48px + 152px + 10px));"
         :regions="$store.state.layersMenu"
+        v-if="this.$route.path === '/'"
       ></layers-menu>
 
       <v-list style="position: absolute; bottom: 0; width: 100%; padding-bottom: 0;">

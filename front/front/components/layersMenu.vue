@@ -1,6 +1,13 @@
 <template>
   <div>
-    {{ regions[0].id }}
+    <v-treeview
+      hoverable
+      dense
+      selectable
+      item-disabled="locked"
+      selection-type="independent"
+      :items="regions"
+    ></v-treeview>
   </div>
 </template>
 

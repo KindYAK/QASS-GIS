@@ -8,91 +8,10 @@
         color: black !important;
       }
     </style>
-    <v-card class="mb-5">
-      <v-container fluid>
-        <v-row>
-          <v-col cols="4">
-            <v-autocomplete
-              v-model="region"
-              :items="regions"
-              item-text="name"
-              label="Область"
-              @change="changeRegion"
-              return-object
-              auto-select-first
-              dense
-              solo
-              hide-details
-            ></v-autocomplete>
-          </v-col>
 
-          <v-col cols="4">
-            <v-autocomplete
-              v-model="district"
-              :items="districts"
-              item-text="name"
-              label="Район"
-              @change="changeDistrict"
-              return-object
-              auto-select-first
-              dense
-              solo
-              hide-details
-            ></v-autocomplete>
-          </v-col>
+    <span style="display: none;">{{layersFromMenu}}</span>
 
-          <v-col cols="4">
-            <v-autocomplete
-              v-model="farmland"
-              :items="farmlands"
-              item-text="name"
-              label="Угодье"
-              @change="changeFarmland"
-              return-object
-              auto-select-first
-              dense
-              solo
-              hide-details
-            ></v-autocomplete>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="6">
-            <v-autocomplete
-              v-model="raw_layers_chosen"
-              :items="raw_layers"
-              item-text="verbose_name"
-              label="Исходные слои"
-              @change="changeRawLayers"
-              return-object
-              auto-select-first
-              dense
-              solo
-              multiple
-              hide-details
-            ></v-autocomplete>
-          </v-col>
-
-          <v-col cols="6">
-            <v-autocomplete
-              v-model="processed_layers_chosen"
-              :items="processed_layers"
-              item-text="verbose_name"
-              label="Обработанные слои"
-              @change="changeProcessedLayers"
-              return-object
-              auto-select-first
-              dense
-              solo
-              multiple
-              hide-details
-            ></v-autocomplete>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card>
-
-    <div id="map-wrap" class="relative z-0" style="height: 74vh">
+    <div id="map-wrap" class="relative z-0" style="height: 85vh">
       <client-only>
         <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]" @ready="handleReady()">
           <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
@@ -117,6 +36,7 @@
 import {GEOSERVER_WMS_URL} from '~/settings/settings'
 import {includesLayer, redrawLastLayer} from "~/utils/utils";
 import L from 'leaflet';
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -145,21 +65,61 @@ export default {
       raw_layers_chosen: [] ,
     }
   },
+  computed: {
+    ...mapGetters(["layersChosen"]),
+
+    layersFromMenu() {
+      let layers = this.layersChosen;
+
+      for(let layer_id of layers){
+        let layer = this.layerNameDict[layer_id];
+        if(this.wmsChosenLayersIds.includes(layer_id)){
+          continue
+        }
+        this.wmsLayer.layers.push(layer);
+        this.wmsChosenLayersIds.push(layer_id);
+      }
+
+      for(let layer_id of this.wmsChosenLayersIds) {
+        if(this.wmsChosenLayersIds.includes(layer_id) && !layers.includes(layer_id)){
+          const index = this.wmsChosenLayersIds.indexOf(layer_id);
+          if (index > -1) {
+            this.wmsLayer.layers.splice(index, 1);
+            this.wmsChosenLayersIds.splice(index, 1);
+          }
+        }
+      }
+      if(this.$refs.myMap) {
+        redrawLastLayer(this.$refs.myMap.mapObject._layers);
+      }
+
+      return layers;
+    }
+  },
   async asyncData({app, store}) {
     let regions = await app.$api.getRegions();
-    let cqlDict = {}
+    let cqlDict = {};
+    let layerNameDict = {};
     function addCql(cqlDict, obj, pref) {
       if(obj.layer_name && obj.cql_filter) {
         cqlDict[pref + obj.id] = obj.cql_filter;
       }
     }
+    function addLayerName(layerNameDict, obj, pref) {
+      if(obj.layer_name) {
+        layerNameDict[pref + obj.id] = obj.layer_name;
+      }
+    }
 
     for(let region of regions.data){
       addCql(cqlDict, region, "region");
+      addLayerName(layerNameDict, region, "region");
       for(let district of region.districts){
         addCql(cqlDict, district, "district");
+        addLayerName(layerNameDict, district, "district");
         for(let farmland of district.farmlands){
           addCql(cqlDict, farmland, "farmland");
+          addLayerName(layerNameDict, farmland, "farmland");
         }
       }
     }
@@ -173,6 +133,7 @@ export default {
         "children": [],
       };
       for (let layer of region.region_raws) {
+        addLayerName(layerNameDict, layer, "raw");
         newRegion.children.push(
           {
             "name": layer.verbose_name,
@@ -181,6 +142,7 @@ export default {
         );
       }
       for (let layer of region.region_processed) {
+        addLayerName(layerNameDict, layer, "proc");
         newRegion.children.push(
           {
             "name": layer.verbose_name,
@@ -196,6 +158,7 @@ export default {
           "children": [],
         }
         for (let layer of district.district_raws) {
+          addLayerName(layerNameDict, layer, "raw");
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
@@ -204,6 +167,7 @@ export default {
           );
         }
         for (let layer of district.district_processed) {
+          addLayerName(layerNameDict, layer, "proc");
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
@@ -219,6 +183,7 @@ export default {
             "children": [],
           }
           for (let layer of farmland.farmland_raws) {
+            addLayerName(layerNameDict, layer, "raw");
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
@@ -227,6 +192,7 @@ export default {
             );
           }
           for (let layer of farmland.farmland_processed) {
+            addLayerName(layerNameDict, layer, "proc");
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
@@ -245,6 +211,7 @@ export default {
     return {
       regions: regions.data,
       cqlDict: cqlDict,
+      layerNameDict: layerNameDict,
     }
   },
   methods: {
@@ -306,201 +273,6 @@ export default {
         .setContent(content)
         .openOn(this._map);
     },
-    changeRegion() {
-      this.districts = this.region.districts;
-      this.district = null;
-      this.farmland = null;
-      this.field = null;
-
-      this.wmsLayer.layers.length = 0;
-      this.wmsChosenLayersIds.length = 0;
-      if(this.region.layer_name) {
-        this.wmsLayer.layers.push(this.region.layer_name);
-        this.wmsChosenLayersIds.push("region" + this.region.id);
-      }
-
-      if(this.region.lat && this.region.lon && this.region.zoom_level) {
-        this.$refs.myMap.mapObject.setView([this.region.lat, this.region.lon], this.region.zoom_level)
-      }
-
-      this.raw_layers = [];
-      this.raw_layers_chosen = [];
-      for(let layer of this.region.region_raws){
-        if(includesLayer(this.raw_layers, layer)){
-          continue
-        }
-        this.raw_layers.push(layer);
-      }
-
-      this.processed_layers = [];
-      this.processed_layers_chosen = [];
-      for(let layer of this.region.region_processed){
-        if(includesLayer(this.processed_layers, layer)){
-          continue
-        }
-        this.processed_layers.push(layer);
-      }
-      redrawLastLayer(this.$refs.myMap.mapObject._layers);
-    },
-    changeDistrict() {
-      this.farmlands = this.district.farmlands;
-
-      this.farmland = null;
-      this.field = null;
-
-      this.wmsLayer.layers.length = 0;
-      this.wmsChosenLayersIds.length = 0;
-      if(this.region.layer_name) {
-        this.wmsLayer.layers.push(this.region.layer_name);
-        this.wmsChosenLayersIds.push("region" + this.region.id);
-      }
-      if(this.district.layer_name) {
-        this.wmsLayer.layers.push(this.district.layer_name);
-        this.wmsChosenLayersIds.push("district" + this.district.id);
-      }
-
-      if(this.district.lat && this.district.lon && this.district.zoom_level) {
-        this.$refs.myMap.mapObject.setView([this.district.lat, this.district.lon], this.district.zoom_level)
-      }
-
-      this.raw_layers = [];
-      this.raw_layers_chosen = [];
-      for(let layer of this.region.region_raws){
-        if(includesLayer(this.raw_layers, layer)){
-          continue
-        }
-        this.raw_layers.push(layer);
-      }
-      for(let layer of this.district.district_raws){
-        if(includesLayer(this.raw_layers, layer)){
-          continue
-        }
-        this.raw_layers.push(layer);
-      }
-
-      this.processed_layers = [];
-      this.processed_layers_chosen = [];
-      for(let layer of this.region.region_processed){
-        if(includesLayer(this.processed_layers, layer)){
-          continue
-        }
-        this.processed_layers.push(layer);
-      }
-      for(let layer of this.district.district_processed){
-        if(includesLayer(this.processed_layers, layer)){
-          continue
-        }
-        this.processed_layers.push(layer);
-      }
-      redrawLastLayer(this.$refs.myMap.mapObject._layers);
-    },
-    changeFarmland() {
-      this.fields = this.farmland.fields;
-
-      this.field = null;
-
-      this.wmsLayer.layers.length = 0;
-      this.wmsChosenLayersIds.length = 0;
-      if (this.region.layer_name) {
-        this.wmsLayer.layers.push(this.region.layer_name);
-        this.wmsChosenLayersIds.push("region" + this.region.id);
-      }
-      if (this.district.layer_name) {
-        this.wmsLayer.layers.push(this.district.layer_name);
-        this.wmsChosenLayersIds.push("district" + this.district.id);
-      }
-      if (this.farmland.layer_name) {
-        this.wmsLayer.layers.push(this.farmland.layer_name);
-        this.wmsChosenLayersIds.push("farmland" + this.farmland.id);
-      }
-
-      if (this.farmland.lat && this.farmland.lon && this.farmland.zoom_level) {
-        this.$refs.myMap.mapObject.setView([this.farmland.lat, this.farmland.lon], this.farmland.zoom_level)
-      }
-
-      this.raw_layers = [];
-      this.raw_layers_chosen = [];
-      for (let layer of this.region.region_raws) {
-        if (includesLayer(this.raw_layers, layer)) {
-          continue
-        }
-        this.raw_layers.push(layer);
-      }
-      for (let layer of this.district.district_raws) {
-        if (includesLayer(this.raw_layers, layer)) {
-          continue
-        }
-        this.raw_layers.push(layer);
-      }
-      for (let layer of this.farmland.farm_land_raws) {
-        if (includesLayer(this.raw_layers, layer)) {
-          continue
-        }
-        this.raw_layers.push(layer);
-      }
-
-      this.processed_layers = [];
-      this.processed_layers_chosen = [];
-      for (let layer of this.region.region_processed) {
-        if (includesLayer(this.processed_layers, layer)) {
-          continue
-        }
-        this.processed_layers.push(layer);
-      }
-      for (let layer of this.district.district_processed) {
-        if (includesLayer(this.processed_layers, layer)) {
-          continue
-        }
-        this.processed_layers.push(layer);
-      }
-      for (let layer of this.farmland.farm_land_processed) {
-        if (includesLayer(this.processed_layers, layer)) {
-          continue
-        }
-        this.processed_layers.push(layer);
-      }
-      redrawLastLayer(this.$refs.myMap.mapObject._layers);
-    },
-    changeProcessedLayers(){
-      for(let layer of this.processed_layers_chosen){
-        if(this.wmsChosenLayersIds.includes("proc" + layer.id)){
-          continue
-        }
-        this.wmsLayer.layers.push(layer.layer_name);
-        this.wmsChosenLayersIds.push("proc" + layer.id);
-      }
-
-      for(let layer of this.processed_layers) {
-        if(this.wmsChosenLayersIds.includes("proc" + layer.id) && !this.processed_layers_chosen.includes(layer)){
-          const index = this.wmsChosenLayersIds.indexOf("proc" + layer.id);
-          if (index > -1) {
-            this.wmsLayer.layers.splice(index, 1);
-            this.wmsChosenLayersIds.splice(index, 1);
-          }
-        }
-      }
-      redrawLastLayer(this.$refs.myMap.mapObject._layers);
-    },
-    changeRawLayers(){
-      for(let layer of this.raw_layers_chosen){
-        if(this.wmsChosenLayersIds.includes("raw" + layer.id)){
-          continue
-        }
-        this.wmsLayer.layers.push(layer.layer_name);
-        this.wmsChosenLayersIds.push("raw" + layer.id);
-      }
-
-      for(let layer of this.raw_layers) {
-        if(this.wmsChosenLayersIds.includes("raw" + layer.id) && !this.raw_layers_chosen.includes(layer)){
-          const index = this.wmsChosenLayersIds.indexOf("raw" + layer.id);
-          if (index > -1) {
-            this.wmsLayer.layers.splice(index, 1);
-            this.wmsChosenLayersIds.splice(index, 1);
-          }
-        }
-      }
-      redrawLastLayer(this.$refs.myMap.mapObject._layers);
-    }
   }
 }
 </script>

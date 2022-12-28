@@ -22,8 +22,8 @@
     <span style="display: none;">{{layersFromMenu}}</span>
 
     <div id="legend" v-if="legend.length > 0">
-      <p v-for="l in legend">
-        <span :style="`display: inline-block; height: 15px; width: 15px; background-color: ${l.color}`"></span> {{ l.description }}
+      <p v-for="l in legend" style="margin: 5px;">
+        <span :style="`display: inline-block; height: 15px; width: 15px; background-color: ${l.color};`"></span> {{ l.description }}
       </p>
     </div>
 

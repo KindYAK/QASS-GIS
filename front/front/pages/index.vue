@@ -7,9 +7,25 @@
       .theme--light.v-treeview .v-treeview-node--disabled > .v-treeview-node__root > .v-treeview-node__content {
         color: black !important;
       }
+      #legend {
+        min-width: 75pt;
+        max-width: 150pt;
+        min-height: 75pt;
+        background-color: ghostwhite;
+        position: absolute;
+        z-index: 111;
+        right: 92pt;
+        bottom: 80pt;
+      }
     </style>
 
     <span style="display: none;">{{layersFromMenu}}</span>
+
+    <div id="legend" v-if="legend.length > 0">
+      <p v-for="l in legend">
+        <span :style="`display: inline-block; height: 15px; width: 15px; background-color: ${l.color}`"></span> {{ l.description }}
+      </p>
+    </div>
 
     <div id="map-wrap" class="relative z-0" style="height: 85vh">
       <client-only>
@@ -62,7 +78,21 @@ export default {
       processed_layers: [],
       raw_layers: [],
       processed_layers_chosen: [],
-      raw_layers_chosen: [] ,
+      raw_layers_chosen: [],
+      legend: [
+        {
+          "color": "#ff0000",
+          "description": "Плохо",
+        },
+        {
+          "color": "#0000ff",
+          "description": "Средне",
+        },
+        {
+          "color": "#00ff00",
+          "description": "Хорошо",
+        }
+      ]
     }
   },
   computed: {

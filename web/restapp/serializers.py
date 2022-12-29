@@ -140,7 +140,7 @@ class ProcessedLayerSerializer(serializers.ModelSerializer):
             legend = LegendSerializer(layer.legend).data
             res = []
             for i in range(1, 11):
-                if legend.get('f"color_{i}"', False) and legend.get(f"description_{i}", False):
+                if legend.get(f"color_{i}", False) and legend.get(f"description_{i}", False):
                     res.append(
                         {
                             "color": legend[f"color_{i}"],

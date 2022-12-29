@@ -21,8 +21,8 @@
 
     <span style="display: none;">{{layersFromMenu}}</span>
 
-    <div id="legend" v-if="legend.length > 0">
-      <p v-for="l in legend" style="margin: 5px;">
+    <div id="legend" v-if="Boolean(legendDict[wmsChosenLayersIds[wmsChosenLayersIds.length - 1]])">
+      <p v-for="l in legendDict[wmsChosenLayersIds[wmsChosenLayersIds.length - 1]]" v-if="Boolean(legendDict[wmsChosenLayersIds[wmsChosenLayersIds.length - 1]])" style="margin: 5px;">
         <span :style="`display: inline-block; height: 15px; width: 15px; background-color: ${l.color};`"></span> {{ l.description }}
       </p>
     </div>
@@ -79,20 +79,6 @@ export default {
       raw_layers: [],
       processed_layers_chosen: [],
       raw_layers_chosen: [],
-      legend: [
-        {
-          "color": "#ff0000",
-          "description": "Плохо",
-        },
-        {
-          "color": "#0000ff",
-          "description": "Средне",
-        },
-        {
-          "color": "#00ff00",
-          "description": "Хорошо",
-        }
-      ]
     }
   },
   computed: {
@@ -130,6 +116,7 @@ export default {
     let regions = await app.$api.getRegions();
     let cqlDict = {};
     let layerNameDict = {};
+    let legendDict = {};
     function addCql(cqlDict, obj, pref) {
       if(obj.layer_name && obj.cql_filter) {
         cqlDict[pref + obj.id] = obj.cql_filter;
@@ -140,16 +127,24 @@ export default {
         layerNameDict[pref + obj.id] = obj.layer_name;
       }
     }
+    function addLegend(layerNameDict, obj, pref) {
+      if(obj.layer_name && obj.legend) {
+        layerNameDict[pref + obj.id] = obj.legend;
+      }
+    }
 
     for(let region of regions.data){
       addCql(cqlDict, region, "region");
       addLayerName(layerNameDict, region, "region");
+      addLegend(legendDict, region, "region");
       for(let district of region.districts){
         addCql(cqlDict, district, "district");
         addLayerName(layerNameDict, district, "district");
+        addLegend(legendDict, district, "district");
         for(let farmland of district.farmlands){
           addCql(cqlDict, farmland, "farmland");
           addLayerName(layerNameDict, farmland, "farmland");
+          addLegend(legendDict, farmland, "farmland");
         }
       }
     }
@@ -164,6 +159,7 @@ export default {
       };
       for (let layer of region.region_raws) {
         addLayerName(layerNameDict, layer, "raw");
+        addLegend(legendDict, layer, "raw");
         newRegion.children.push(
           {
             "name": layer.verbose_name,
@@ -173,6 +169,7 @@ export default {
       }
       for (let layer of region.region_processed) {
         addLayerName(layerNameDict, layer, "proc");
+        addLegend(legendDict, layer, "proc");
         newRegion.children.push(
           {
             "name": layer.verbose_name,
@@ -189,6 +186,7 @@ export default {
         }
         for (let layer of district.district_raws) {
           addLayerName(layerNameDict, layer, "raw");
+          addLegend(legendDict, layer, "raw");
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
@@ -198,6 +196,7 @@ export default {
         }
         for (let layer of district.district_processed) {
           addLayerName(layerNameDict, layer, "proc");
+          addLegend(legendDict, layer, "proc");
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
@@ -214,6 +213,7 @@ export default {
           }
           for (let layer of farmland.farmland_raws) {
             addLayerName(layerNameDict, layer, "raw");
+            addLegend(legendDict, layer, "raw");
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
@@ -223,6 +223,7 @@ export default {
           }
           for (let layer of farmland.farmland_processed) {
             addLayerName(layerNameDict, layer, "proc");
+            addLegend(legendDict, layer, "proc");
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
@@ -242,6 +243,7 @@ export default {
       regions: regions.data,
       cqlDict: cqlDict,
       layerNameDict: layerNameDict,
+      legendDict: legendDict,
     }
   },
   methods: {

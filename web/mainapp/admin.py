@@ -65,6 +65,12 @@ class AlgorithmAdmin(admin.ModelAdmin):
     search_fields = ('name', )
 
 
+class LegendAdmin(admin.ModelAdmin):
+    list_filter = ()
+    list_display = ('name', )
+    search_fields = ('name', )
+
+
 admin.site.register(Region, RegionAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(FarmLand, FarmLandAdmin)
@@ -76,3 +82,5 @@ admin.site.register(Satellite, SatelliteAdmin)
 admin.site.register(IndexChannel, IndexChannelAdmin)
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Algorithm, AlgorithmAdmin)
+
+admin.site.register(Legend, LegendAdmin)

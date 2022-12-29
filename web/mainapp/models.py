@@ -76,6 +76,8 @@ class RawLayer(GeoObject):
     satellite = models.ForeignKey('Satellite', null=True, on_delete=models.PROTECT, verbose_name="Спутник")
     index_channel = models.ForeignKey('IndexChannel', null=True, on_delete=models.PROTECT, verbose_name="Индекс/Канал")
 
+    legend = models.ForeignKey('Legend', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Легенда")
+
     class Meta:
         verbose_name = "Исходный слой"
         verbose_name_plural = "Исходные слои"
@@ -99,6 +101,8 @@ class ProcessedLayer(GeoObject):
     index_channel = models.ForeignKey('IndexChannel', null=True, on_delete=models.PROTECT, verbose_name="Индекс/Канал")
     author = models.ForeignKey('Author', null=True, on_delete=models.PROTECT, verbose_name="Автор")
     algorithm = models.ForeignKey('Algorithm', null=True, on_delete=models.PROTECT, verbose_name="Алгоритм/подход")
+
+    legend = models.ForeignKey('Legend', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Легенда")
 
     class Meta:
         verbose_name = "Обработанный слой"
@@ -152,6 +156,38 @@ class Algorithm(models.Model):
     class Meta:
         verbose_name = "Алгоритм/подход"
         verbose_name_plural = "Алгоритм/подход"
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Legend(models.Model):
+    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
+
+    color_1 = models.CharField(max_length=10, null=True, blank=True)
+    description_1 = models.CharField(max_length=50, null=True, blank=True)
+    color_2 = models.CharField(max_length=10, null=True, blank=True)
+    description_2 = models.CharField(max_length=50, null=True, blank=True)
+    color_3 = models.CharField(max_length=10, null=True, blank=True)
+    description_3 = models.CharField(max_length=50, null=True, blank=True)
+    color_4 = models.CharField(max_length=10, null=True, blank=True)
+    description_4 = models.CharField(max_length=50, null=True, blank=True)
+    color_5 = models.CharField(max_length=10, null=True, blank=True)
+    description_5 = models.CharField(max_length=50, null=True, blank=True)
+    color_6 = models.CharField(max_length=10, null=True, blank=True)
+    description_6 = models.CharField(max_length=50, null=True, blank=True)
+    color_7 = models.CharField(max_length=10, null=True, blank=True)
+    description_7 = models.CharField(max_length=50, null=True, blank=True)
+    color_8 = models.CharField(max_length=10, null=True, blank=True)
+    description_8 = models.CharField(max_length=50, null=True, blank=True)
+    color_9 = models.CharField(max_length=10, null=True, blank=True)
+    description_9 = models.CharField(max_length=50, null=True, blank=True)
+    color_10 = models.CharField(max_length=10, null=True, blank=True)
+    description_10 = models.CharField(max_length=50, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Легенда"
+        verbose_name_plural = "Легенды"
 
     def __str__(self):
         return f"{self.name}"

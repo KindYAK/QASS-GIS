@@ -111,8 +111,16 @@ class FieldSerializer(serializers.ModelSerializer):
 
 
 class RawLayerSerializer(serializers.ModelSerializer):
+    legend = SerializerMethodField()
+
     def get_verbose_name(self, layer):
         return f"{layer.index_channel} - {layer.satellite} ({layer.layer_name})"
+
+    def get_legend(self, layer):
+        if layer.legend:
+            return LegendSerializer(layer.legend).data
+        else:
+            return None
 
     class Meta:
         model = RawLayer
@@ -122,9 +130,16 @@ class RawLayerSerializer(serializers.ModelSerializer):
 
 class ProcessedLayerSerializer(serializers.ModelSerializer):
     verbose_name = SerializerMethodField()
+    legend = SerializerMethodField()
 
     def get_verbose_name(self, layer):
         return f"{layer.index_channel} - {layer.algorithm} ({layer.layer_name})"
+
+    def get_legend(self, layer):
+        if layer.legend:
+            return LegendSerializer(layer.legend).data
+        else:
+            return None
 
     class Meta:
         model = ProcessedLayer
@@ -153,4 +168,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 class AlgorithmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Algorithm
+        fields = '__all__'
+
+
+class LegendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Legend
         fields = '__all__'

@@ -50,9 +50,12 @@
 
 <script>
 import {GEOSERVER_WMS_URL} from '~/settings/settings'
-import {includesLayer, redrawLastLayer} from "~/utils/utils";
+import {redrawLastLayer} from "~/utils/utils";
 import L from 'leaflet';
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
+
+import '~/plugins/leaflet-fullscreen/leaflet.fullscreen.css'
+import '~/plugins/leaflet-fullscreen/Leaflet.fullscreen.min'
 
 export default {
   data() {
@@ -251,6 +254,9 @@ export default {
       this.map = this.$refs.myMap.mapObject;
       this._map = this.map;
       this.map.on('click', this.getFeatureInfo, this);
+
+      const map = this.$refs.myMap.mapObject;
+      map.addControl(new window.L.Control.Fullscreen());
     },
     async getFeatureInfo(evt) {
       var url = this.getFeatureInfoUrl(evt.latlng);

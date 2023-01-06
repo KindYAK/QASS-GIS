@@ -17,6 +17,10 @@
         right: 92pt;
         bottom: 80pt;
       }
+
+      .v-treeview-node__label {
+        white-space: break-spaces;
+      }
     </style>
 
     <span style="display: none;">{{layersFromMenu}}</span>

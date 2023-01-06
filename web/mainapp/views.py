@@ -5,7 +5,6 @@ from annoying.functions import get_object_or_None
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from geo.Geoserver import Geoserver
 
 from qassback.settings import GEOSERVER_ROOT
 from .models import *

@@ -114,6 +114,8 @@ class RawLayerSerializer(serializers.ModelSerializer):
     legend = SerializerMethodField()
 
     def get_verbose_name(self, layer):
+        if layer.custom_name:
+            return layer.custom_name
         return f"{layer.index_channel} - {layer.satellite} ({layer.layer_name})"
 
     def get_legend(self, layer):
@@ -133,6 +135,8 @@ class ProcessedLayerSerializer(serializers.ModelSerializer):
     legend = SerializerMethodField()
 
     def get_verbose_name(self, layer):
+        if layer.custom_name:
+            return layer.custom_name
         return f"{layer.index_channel} - {layer.algorithm} ({layer.layer_name})"
 
     def get_legend(self, layer):

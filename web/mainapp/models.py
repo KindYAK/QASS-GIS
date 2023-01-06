@@ -78,6 +78,8 @@ class RawLayer(GeoObject):
 
     legend = models.ForeignKey('Legend', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Легенда")
 
+    custom_name = models.TextField(null=True, blank=True, verbose_name="Особое название")
+
     class Meta:
         verbose_name = "Исходный слой"
         verbose_name_plural = "Исходные слои"
@@ -103,6 +105,8 @@ class ProcessedLayer(GeoObject):
     algorithm = models.ForeignKey('Algorithm', null=True, on_delete=models.PROTECT, verbose_name="Алгоритм/подход")
 
     legend = models.ForeignKey('Legend', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Легенда")
+
+    custom_name = models.TextField(null=True, blank=True, verbose_name="Особое название")
 
     class Meta:
         verbose_name = "Обработанный слой"

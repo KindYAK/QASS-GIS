@@ -1,5 +1,9 @@
 <template>
   <div>
+    <v-btn
+      style="margin-left: 15px;"
+      @click="layersFromMenu = []"
+    >Сбросить выбор</v-btn>
     <v-treeview
       hoverable
       dense

@@ -306,6 +306,17 @@ export default {
           let newHeightInMM = a4HeightInMM * ratio;
           gridContainer.style.height = `${newHeightInMM}mm`;
         }
+        var isFirefox = navigator.userAgent.indexOf('Firefox') !== -1;
+        if(isFirefox){
+          const a4HeightInMM = 97; // Adjusted height for A4 paper in landscape mode, accounting for margins
+          const a4WidthInMM = 280;  // Adjusted width for A4 paper in landscape mode, accounting for margins
+
+          let gridContainer = document.querySelector('.grid-print-container');
+          let gridContainerWidthInMM = parseFloat(gridContainer.style.width);
+          let ratio = gridContainerWidthInMM / a4WidthInMM;
+          let newHeightInMM = a4HeightInMM * ratio;
+          gridContainer.style.height = `${newHeightInMM}mm`;
+        }
         window.print();
       }
 

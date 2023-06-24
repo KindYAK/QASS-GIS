@@ -57,7 +57,7 @@
       <v-spacer />
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container style="margin: 0; padding: 0; max-width: unset; width: 100%;">
         <Nuxt />
       </v-container>
     </v-main>

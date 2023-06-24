@@ -31,7 +31,7 @@
       </p>
     </div>
 
-    <div id="map-wrap" class="relative z-0" style="height: 85vh">
+    <div id="map-wrap" class="relative z-0" style="height: calc(100vh - 100px);">
       <client-only>
         <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]" @ready="handleReady()">
           <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>

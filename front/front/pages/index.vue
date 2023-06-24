@@ -21,6 +21,37 @@
       .v-treeview-node__label {
         white-space: break-spaces;
       }
+
+      // Print stuff
+      @page {
+        margin: 0;
+      }
+
+      @media print {
+        @page {
+          margin: 0;
+        }
+
+        body {
+          margin: 0;
+        }
+
+        body {
+          padding-top: 5cm !important;
+          padding-bottom: 5cm !important;
+        }
+      }
+
+      html, body {
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+
+      #-print {
+      }
+
     </style>
 
     <span style="display: none;">{{layersFromMenu}}</span>
@@ -60,6 +91,7 @@ import {mapGetters} from "vuex";
 
 import '~/plugins/leaflet-fullscreen/leaflet.fullscreen.css'
 import '~/plugins/leaflet-fullscreen/Leaflet.fullscreen.min'
+import '~/plugins/leaflet.browser.print'
 
 export default {
   data() {
@@ -257,10 +289,37 @@ export default {
     handleReady(){
       this.map = this.$refs.myMap.mapObject;
       this._map = this.map;
-      this.map.on('click', this.getFeatureInfo, this);
+      // this.map.on('click', this.getFeatureInfo, this);
 
       const map = this.$refs.myMap.mapObject;
       map.addControl(new window.L.Control.Fullscreen());
+
+      function customPrint(){
+        var isChrome = navigator.userAgent.indexOf('Chrome') !== -1 && navigator.userAgent.indexOf('Edge') === -1 && navigator.userAgent.indexOf('OPR') === -1
+        if(isChrome) {
+          const a4HeightInMM = 162; // Adjusted height for A4 paper in landscape mode, accounting for margins
+          const a4WidthInMM = 280;  // Adjusted width for A4 paper in landscape mode, accounting for margins
+
+          let gridContainer = document.querySelector('.grid-print-container');
+          let gridContainerWidthInMM = parseFloat(gridContainer.style.width);
+          let ratio = gridContainerWidthInMM / a4WidthInMM;
+          let newHeightInMM = a4HeightInMM * ratio;
+          gridContainer.style.height = `${newHeightInMM}mm`;
+        }
+        window.print();
+      }
+
+      map.addControl(
+        L.control.browserPrint({
+          title: "Печать",
+          manualMode: false,
+          closePopupsOnPrint: true,
+          printFunction: customPrint,
+          printModes: [
+            L.BrowserPrint.Mode.Landscape("A4", {pageSize: "A4", enableZoom: true,}),
+          ],
+        })
+      )
     },
     async getFeatureInfo(evt) {
       var url = this.getFeatureInfoUrl(evt.latlng);

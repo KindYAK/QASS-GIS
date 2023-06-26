@@ -11,6 +11,7 @@
       label="Search"
       single-line
       hide-details
+      style="width: 90%; margin-left: 15px;"
     ></v-text-field>
 
     <v-treeview

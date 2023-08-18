@@ -77,6 +77,7 @@ class RawLayer(GeoObject):
     index_channel = models.ForeignKey('IndexChannel', null=True, on_delete=models.PROTECT, verbose_name="Индекс/Канал")
 
     legend = models.ForeignKey('Legend', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Легенда")
+    legend_image = models.ImageField(null=True, blank=True, upload_to='legends', verbose_name="Изображение легенды")
 
     custom_name = models.TextField(null=True, blank=True, verbose_name="Особое название")
 
@@ -105,6 +106,7 @@ class ProcessedLayer(GeoObject):
     algorithm = models.ForeignKey('Algorithm', null=True, on_delete=models.PROTECT, verbose_name="Алгоритм/подход")
 
     legend = models.ForeignKey('Legend', null=True, blank=True, on_delete=models.PROTECT, verbose_name="Легенда")
+    legend_image = models.ImageField(null=True, blank=True, verbose_name="Изображение легенды")
 
     custom_name = models.TextField(null=True, blank=True, verbose_name="Особое название")
 

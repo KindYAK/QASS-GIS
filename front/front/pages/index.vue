@@ -7,6 +7,7 @@
       .theme--light.v-treeview .v-treeview-node--disabled > .v-treeview-node__root > .v-treeview-node__content {
         color: black !important;
       }
+
       #legend {
         min-width: 75pt;
         max-width: 150pt;
@@ -16,6 +17,17 @@
         z-index: 111;
         right: 92pt;
         bottom: 80pt;
+      }
+
+      #legend_image {
+        min-width: 75pt;
+        max-width: 250pt;
+        min-height: 75pt;
+        background-color: transparent;
+        position: absolute;
+        z-index: 111;
+        right: 50pt;
+        bottom: 50pt;
       }
 
       .v-treeview-node__label {
@@ -62,6 +74,10 @@
       </p>
     </div>
 
+    <div id="legend_image" v-if="Boolean(legendImageDict[wmsChosenLayersIds[wmsChosenLayersIds.length - 1]])">
+      <img :src="BASE_URL + legendImageDict[wmsChosenLayersIds[wmsChosenLayersIds.length - 1]]">
+    </div>
+
     <div id="map-wrap" class="relative z-0" style="height: calc(100vh - 100px);">
       <client-only>
         <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]" @ready="handleReady()">
@@ -88,6 +104,7 @@ import {GEOSERVER_WMS_URL} from '~/settings/settings'
 import {redrawLastLayer} from "~/utils/utils";
 import L from 'leaflet';
 import {mapGetters} from "vuex";
+import {BASE_URL} from '~/settings/settings'
 
 import '~/plugins/leaflet-fullscreen/leaflet.fullscreen.css'
 import '~/plugins/leaflet-fullscreen/Leaflet.fullscreen.min'
@@ -96,6 +113,7 @@ import '~/plugins/leaflet.browser.print'
 export default {
   data() {
     return {
+      BASE_URL: BASE_URL,
       wmsLayer: {
         // url: GEOSERVER_WMS_URL + '&CQL_FILTER=AREA_NAME=\'Туркестанская область\'',
         url: GEOSERVER_WMS_URL,
@@ -156,6 +174,7 @@ export default {
     let cqlDict = {};
     let layerNameDict = {};
     let legendDict = {};
+    let legendImageDict = {};
     function addCql(cqlDict, obj, pref) {
       if(obj.layer_name && obj.cql_filter) {
         cqlDict[pref + obj.id] = obj.cql_filter;
@@ -171,19 +190,27 @@ export default {
         layerNameDict[pref + obj.id] = obj.legend;
       }
     }
+    function addLegendImage(layerNameDict, obj, pref) {
+      if(obj.layer_name && obj.legend_image) {
+        layerNameDict[pref + obj.id] = obj.legend_image;
+      }
+    }
 
     for(let region of regions.data){
       addCql(cqlDict, region, "region");
       addLayerName(layerNameDict, region, "region");
       addLegend(legendDict, region, "region");
+      addLegendImage(legendImageDict, region, "region");
       for(let district of region.districts){
         addCql(cqlDict, district, "district");
         addLayerName(layerNameDict, district, "district");
         addLegend(legendDict, district, "district");
+        addLegendImage(legendImageDict, district, "district");
         for(let farmland of district.farmlands){
           addCql(cqlDict, farmland, "farmland");
           addLayerName(layerNameDict, farmland, "farmland");
           addLegend(legendDict, farmland, "farmland");
+          addLegendImage(legendImageDict, farmland, "farmland");
         }
       }
     }
@@ -199,6 +226,7 @@ export default {
       for (let layer of region.region_raws) {
         addLayerName(layerNameDict, layer, "raw");
         addLegend(legendDict, layer, "raw");
+        addLegendImage(legendImageDict, layer, "raw");
         newRegion.children.push(
           {
             "name": layer.verbose_name,
@@ -209,6 +237,7 @@ export default {
       for (let layer of region.region_processed) {
         addLayerName(layerNameDict, layer, "proc");
         addLegend(legendDict, layer, "proc");
+        addLegendImage(legendImageDict, layer, "proc");
         newRegion.children.push(
           {
             "name": layer.verbose_name,
@@ -226,6 +255,7 @@ export default {
         for (let layer of district.district_raws) {
           addLayerName(layerNameDict, layer, "raw");
           addLegend(legendDict, layer, "raw");
+          addLegendImage(legendImageDict, layer, "raw");
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
@@ -236,6 +266,7 @@ export default {
         for (let layer of district.district_processed) {
           addLayerName(layerNameDict, layer, "proc");
           addLegend(legendDict, layer, "proc");
+          addLegendImage(legendImageDict, layer, "proc");
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
@@ -253,6 +284,7 @@ export default {
           for (let layer of farmland.farmland_raws) {
             addLayerName(layerNameDict, layer, "raw");
             addLegend(legendDict, layer, "raw");
+            addLegendImage(legendImageDict, layer, "raw");
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
@@ -263,6 +295,7 @@ export default {
           for (let layer of farmland.farmland_processed) {
             addLayerName(layerNameDict, layer, "proc");
             addLegend(legendDict, layer, "proc");
+            addLegendImage(legendImageDict, layer, "proc");
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
@@ -283,6 +316,7 @@ export default {
       cqlDict: cqlDict,
       layerNameDict: layerNameDict,
       legendDict: legendDict,
+      legendImageDict: legendImageDict,
     }
   },
   methods: {

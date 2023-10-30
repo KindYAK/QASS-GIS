@@ -1,5 +1,11 @@
 <template>
   <div>
+    <style>
+      .v-tooltip__content span {
+        font-size: 10px;
+      }
+    </style>
+
     <v-btn
       style="margin-left: 15px;"
       @click="layersFromMenu = []"
@@ -23,12 +29,29 @@
       item-disabled="locked"
       selection-type="independent"
       :items="filteredRegions"
-    ></v-treeview>
+    >
+      <template v-slot:label="{ item }">
+        <div class="v-treeview-node__content">
+          <div class="v-treeview-node__label">{{ item.name }}</div>
+          <v-tooltip v-if="item.description" bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                class="mx-2"
+                v-bind="attrs"
+                v-on="on"
+              >
+                mdi-information
+              </v-icon>
+            </template>
+            <span>{{ item.description }}</span>
+          </v-tooltip>
+        </div>
+      </template>
+    </v-treeview>
   </div>
 </template>
 
 <script>
-import {GEOSERVER_WMS_URL} from "~/settings/prod";
 
 export default {
   data() {
@@ -58,6 +81,7 @@ export default {
           // Assign filtered children to new region
           newRegion.children = filteredChildren;
 
+          console.log(newRegion)
           acc.push(newRegion);
         }
 

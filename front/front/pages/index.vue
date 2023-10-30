@@ -230,6 +230,7 @@ export default {
         newRegion.children.push(
           {
             "name": layer.verbose_name,
+            "description": layer.index_channel.description,
             "id": "raw" + layer.id,
           }
         );
@@ -241,6 +242,7 @@ export default {
         newRegion.children.push(
           {
             "name": layer.verbose_name,
+            "description": layer.index_channel.description,
             "id": "proc" + layer.id,
           }
         );
@@ -259,6 +261,7 @@ export default {
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
+              "description": layer.index_channel.description,
               "id": "raw" + layer.id,
             }
           );
@@ -270,6 +273,7 @@ export default {
           newDistrict.children.push(
             {
               "name": layer.verbose_name,
+              "description": layer.index_channel.description,
               "id": "proc" + layer.id,
             }
           );
@@ -288,6 +292,7 @@ export default {
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
+                "description": layer.index_channel.description,
                 "id": "raw" + layer.id,
               }
             );
@@ -299,6 +304,7 @@ export default {
             newFarmland.children.push(
               {
                 "name": layer.verbose_name,
+                "description": layer.index_channel.description,
                 "id": "proc" + layer.id,
               }
             );

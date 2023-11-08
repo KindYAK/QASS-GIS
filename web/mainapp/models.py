@@ -132,7 +132,7 @@ class Satellite(models.Model):
 
 
 class IndexChannel(models.Model):
-    name = models.CharField(max_length=50, unique=True, verbose_name="Название")
+    name = models.CharField(max_length=100, unique=True, verbose_name="Название")
     description = models.TextField(verbose_name="Описание")
 
     is_final = models.BooleanField(default=False, verbose_name="Финальный тип?")

@@ -78,10 +78,23 @@
       <img :src="BASE_URL + legendImageDict[wmsChosenLayersIds[wmsChosenLayersIds.length - 1]]">
     </div>
 
+    <div v-if="loading" class="fixed top-20 right-10 m-5 z-20">
+      <v-progress-circular
+        indeterminate
+        color="primary"
+        :size="90"
+        :width="12"
+      ></v-progress-circular>
+    </div>
+
     <div id="map-wrap" class="relative z-0" style="height: calc(100vh - 100px);">
       <client-only>
-        <l-map ref="myMap" :zoom=5 :center="[48.0196, 66.9237]" @ready="handleReady()">
-          <l-tile-layer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"></l-tile-layer>
+        <l-map ref="myMap" :zoom="5" :center="[48.0196, 66.9237]" @ready="handleReady">
+          <l-tile-layer
+            url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
+            @loading="setLayerLoading('base', true)"
+            @load="setLayerLoading('base', false)">
+          </l-tile-layer>
           <l-lwms-tile-layer
             v-for="(layer, index) in wmsLayer.layers"
             :key="wmsChosenLayersIds[index]"
@@ -92,7 +105,10 @@
             :attribution="wmsLayer.attribution"
             :transparent="true"
             format="image/png"
-            layer-type="base"></l-lwms-tile-layer>
+            layer-type="base"
+            @loading="setLayerLoading(wmsChosenLayersIds[index], true)"
+            @load="setLayerLoading(wmsChosenLayersIds[index], false)">
+          </l-lwms-tile-layer>
         </l-map>
       </client-only>
     </div>
@@ -113,6 +129,8 @@ import '~/plugins/leaflet.browser.print'
 export default {
   data() {
     return {
+      loading: true,
+      layerLoadingStates: {},
       BASE_URL: BASE_URL,
       wmsLayer: {
         // url: GEOSERVER_WMS_URL + '&CQL_FILTER=AREA_NAME=\'Туркестанская область\'',
@@ -167,6 +185,12 @@ export default {
       }
 
       return layers;
+    }
+  },
+  watch: {
+    wmsChosenLayersIds() {
+      // Whenever layers are added/removed, update the loading state
+      this.updateLayerLoadingStates();
     }
   },
   async asyncData({app, store}) {
@@ -425,6 +449,29 @@ export default {
         .setContent(content)
         .openOn(this._map);
     },
+    setLayerLoading(layerId, isLoading) {
+      this.$set(this.layerLoadingStates, layerId, isLoading);
+      this.updateGlobalLoadingState();
+    },
+    updateGlobalLoadingState() {
+      // Check if any layer is still loading
+      this.loading = Object.values(this.layerLoadingStates).some(isLoading => isLoading);
+    },
+    updateLayerLoadingStates() {
+      // Set initial loading state for new layers
+      this.wmsChosenLayersIds.forEach(id => {
+        if (this.layerLoadingStates[id] === undefined) {
+          this.$set(this.layerLoadingStates, id, true);
+        }
+      });
+      // Remove states for layers that are no longer active
+      for (let id in this.layerLoadingStates) {
+        if (!this.wmsChosenLayersIds.includes(id)) {
+          this.$delete(this.layerLoadingStates, id);
+        }
+      }
+      this.updateGlobalLoadingState();
+    }
   }
 }
 </script>
